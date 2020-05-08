@@ -12,6 +12,7 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
 
+  var _obscureText = true;
   String _username, _email, _password;
 
   Widget _showTitle(BuildContext ctx) => Text(
@@ -66,6 +67,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
             icon: Icon(
               Icons.lock,
               color: Colors.grey,
+            ),
+            suffixIcon: GestureDetector(
+              child:
+                  Icon(_obscureText ? Icons.visibility : Icons.visibility_off),
+              onTap: () {
+                setState(() {
+                  _obscureText = !_obscureText;
+                });
+              },
             ),
           ),
         ),

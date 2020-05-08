@@ -11,7 +11,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  bool _obscureText = true;
+  var _obscureText = true;
 
   String _email, _password;
 
@@ -44,22 +44,23 @@ class _LoginScreenState extends State<LoginScreen> {
           validator: (val) => val.length < 6 ? 'Username too short' : null,
           obscureText: _obscureText,
           decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Password',
-              hintText: 'Enter password, min length 6',
-              icon: Icon(
-                Icons.lock,
-                color: Colors.grey,
-              ),
-              suffixIcon: GestureDetector(
-                child: Icon(
-                    _obscureText ? Icons.visibility : Icons.visibility_off),
-                onTap: () {
-                  setState(() {
-                    _obscureText = !_obscureText;
-                  });
-                },
-              )),
+            border: OutlineInputBorder(),
+            labelText: 'Password',
+            hintText: 'Enter password, min length 6',
+            icon: Icon(
+              Icons.lock,
+              color: Colors.grey,
+            ),
+            suffixIcon: GestureDetector(
+              child:
+                  Icon(_obscureText ? Icons.visibility : Icons.visibility_off),
+              onTap: () {
+                setState(() {
+                  _obscureText = !_obscureText;
+                });
+              },
+            ),
+          ),
         ),
       );
 
