@@ -1,39 +1,23 @@
 import 'package:flutter/material.dart';
 
-import './login_screen.dart';
+import './register_screen.dart';
 
-class RegisterScreen extends StatefulWidget {
-  static const routeName = '/register';
-
+class LoginScreen extends StatefulWidget {
+  static const routeName = '/login';
   @override
-  _RegisterScreenState createState() => _RegisterScreenState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  String _username, _email, _password;
+  bool _obscureText = true;
+
+  String _email, _password;
 
   Widget _showTitle(BuildContext ctx) => Text(
-        'Register',
+        'Login',
         style: Theme.of(ctx).textTheme.headline1,
-      );
-
-  Widget _showUsernameInput() => Padding(
-        padding: const EdgeInsets.only(top: 20.0),
-        child: TextFormField(
-          onSaved: (val) => _username = val,
-          validator: (val) => val.length < 6 ? 'Username too short' : null,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'Username',
-            hintText: 'Enter username, min length 6',
-            icon: Icon(
-              Icons.face,
-              color: Colors.grey,
-            ),
-          ),
-        ),
       );
 
   Widget _showEmailInput() => Padding(
@@ -58,16 +42,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
         child: TextFormField(
           onSaved: (val) => _password = val,
           validator: (val) => val.length < 6 ? 'Username too short' : null,
-          obscureText: true,
+          obscureText: _obscureText,
           decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'Password',
-            hintText: 'Enter password, min length 6',
-            icon: Icon(
-              Icons.lock,
-              color: Colors.grey,
-            ),
-          ),
+              border: OutlineInputBorder(),
+              labelText: 'Password',
+              hintText: 'Enter password, min length 6',
+              icon: Icon(
+                Icons.lock,
+                color: Colors.grey,
+              ),
+              suffixIcon: GestureDetector(
+                child: Icon(
+                    _obscureText ? Icons.visibility : Icons.visibility_off),
+                onTap: () {
+                  setState(() {
+                    _obscureText = !_obscureText;
+                  });
+                },
+              )),
         ),
       );
 
@@ -87,13 +79,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(10.0)),
               ),
-              color: Theme.of(context).primaryColor,
+              color: Theme.of(context).accentColor,
             ),
             FlatButton(
-              child: Text('Existing user? Login'),
+              child: Text('New user? Register'),
               onPressed: () => Navigator.pushReplacementNamed(
                 context,
-                LoginScreen.routeName,
+                RegisterScreen.routeName,
               ),
             )
           ],
@@ -104,7 +96,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final form = _formKey.currentState;
     if (form.validate()) {
       form.save();
-      print('Username: $_username, Email: $_email, Password: $_password');
+      print('Email: $_email, Password: $_password');
     } else {
       print("Form Invalid");
     }
@@ -114,7 +106,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       // appBar: AppBar(
-      //   title: Text('Register'),
+      //   title: Text('Login'),
       //   // leading: Icon(Icons.arrow_back_ios),
       // ),
       body: SafeArea(
@@ -127,7 +119,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 child: Column(
                   children: <Widget>[
                     _showTitle(context),
-                    _showUsernameInput(),
                     _showEmailInput(),
                     _showPasswordInput(),
                     _showFormActions(),
