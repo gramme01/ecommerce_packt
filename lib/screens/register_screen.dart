@@ -6,6 +6,10 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  final _formKey = GlobalKey<FormState>();
+
+  String _username, _email, _password;
+
   Widget _showTitle(BuildContext ctx) => Text(
         'Register',
         style: Theme.of(ctx).textTheme.headline1,
@@ -14,6 +18,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget _showUsernameInput() => Padding(
         padding: const EdgeInsets.only(top: 20.0),
         child: TextFormField(
+          onSaved: (val) => _username = val,
+          validator: (val) => val.length < 6 ? 'Username too short' : null,
           decoration: InputDecoration(
             border: OutlineInputBorder(),
             labelText: 'Username',
@@ -29,6 +35,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget _showEmailInput() => Padding(
         padding: const EdgeInsets.only(top: 20.0),
         child: TextFormField(
+          onSaved: (val) => _email = val,
+          validator: (val) => !val.contains('@') ? 'Invalid Email' : null,
           decoration: InputDecoration(
             border: OutlineInputBorder(),
             labelText: 'Email',
@@ -44,6 +52,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget _showPasswordInput() => Padding(
         padding: const EdgeInsets.only(top: 20.0),
         child: TextFormField(
+          onSaved: (val) => _password = val,
+          validator: (val) => val.length < 6 ? 'Username too short' : null,
           obscureText: true,
           decoration: InputDecoration(
             border: OutlineInputBorder(),
@@ -62,7 +72,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         child: Column(
           children: <Widget>[
             RaisedButton(
-              onPressed: () => print('Submit'),
+              onPressed: _submit,
               child: Text(
                 'Submit',
                 style: Theme.of(context).textTheme.bodyText1.copyWith(
@@ -83,6 +93,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
       );
 
+  void _submit() {
+    final form = _formKey.currentState;
+    if (form.validate()) {
+      form.save();
+      print('Username: $_username, Email: $_email, Password: $_password');
+    } else {
+      print("Form Invalid");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,6 +115,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         child: Center(
           child: SingleChildScrollView(
             child: Form(
+              key: _formKey,
               child: Column(
                 children: <Widget>[
                   _showTitle(context),
