@@ -29,9 +29,10 @@ class MyApp extends StatelessWidget {
             fontSize: 18,
           ),
         ),
+        textSelectionHandleColor: Colors.cyan,
+        cursorColor: Colors.deepOrange,
       ),
       home: RegisterScreen(),
     );
   }
 }
-//fhsdhgfjhgsdfjhkjhkhkjhjdfscddfsddfsdf hgdtehkhughrrt scxxcfdsdfsfddsdfdsdfdsdfdsdfjghjghgjhgjghgjghjfdwf dsdfsfdsfds

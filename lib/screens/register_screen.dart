@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 import './login_screen.dart';
 
@@ -11,6 +14,7 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
+  final registerUrl = 'http://10.0.2.2:1337/auth/local/register';
 
   var _obscureText = true;
   String _username, _email, _password;
@@ -59,7 +63,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         child: TextFormField(
           onSaved: (val) => _password = val,
           validator: (val) => val.length < 6 ? 'Username too short' : null,
-          obscureText: true,
+          obscureText: _obscureText,
           decoration: InputDecoration(
             border: OutlineInputBorder(),
             labelText: 'Password',
@@ -114,10 +118,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final form = _formKey.currentState;
     if (form.validate()) {
       form.save();
-      print('Username: $_username, Email: $_email, Password: $_password');
+      _registerUser();
     } else {
       print("Form Invalid");
     }
+  }
+
+  Future<void> _registerUser() async {
+    http.Response response = await http.post(
+      registerUrl,
+      body: {
+        "username": _username,
+        "email": _email,
+        "password": _password,
+      },
+    );
+    final respData = json.decode(response.body);
+    print(respData);
   }
 
   @override
