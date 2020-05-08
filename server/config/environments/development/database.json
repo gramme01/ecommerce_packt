@@ -1,0 +1,20 @@
+{
+  "defaultConnection": "default",
+  "connections": {
+    "default": {
+      "connector": "mongoose",
+      "settings": {
+        "database": "server",
+        "host": "@flutter-ecommerce-wvbty.mongodb.net",
+        "srv": "true",
+        "port": 27017,
+        "username": "gramme01",
+        "password": "elephant1996"
+      },
+      "options": {
+        "authenticationDatabase": "",
+        "ssl": true
+      }
+    }
+  }
+}
