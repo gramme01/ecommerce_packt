@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import './register_screen.dart';
 import './products_screen.dart';
@@ -119,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
     http.Response response = await http.post(
       registerUrl,
       body: {
-        "identifier": _email,
+        "identifier": _email.trim(),
         "password": _password,
       },
     );
@@ -129,7 +130,8 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         _isSubmitting = false;
       });
-      _showSnack('$_email successfully logged in');
+      _storeUserData(respData);
+      _showSnack('${_email.trim()} successfully logged in');
       _redirectUser();
       print(respData);
     } else {
@@ -139,6 +141,13 @@ class _LoginScreenState extends State<LoginScreen> {
       final String errorMsg = respData['message'][0]['messages'][0]['message'];
       _showSnack(errorMsg, false);
     }
+  }
+
+  Future<void> _storeUserData(responseData) async {
+    final prefs = await SharedPreferences.getInstance();
+    Map<String, dynamic> user = responseData['user'];
+    user.putIfAbsent('jwt', () => responseData['jwt']);
+    prefs.setString('user', json.encode(user));
   }
 
   void _showSnack(String text, [bool success = true]) {

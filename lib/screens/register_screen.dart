@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import './login_screen.dart';
 import './products_screen.dart';
@@ -149,6 +150,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       setState(() {
         _isSubmitting = false;
       });
+      _storeUserData(respData);
       _showSnack('User $_username successfully created');
       _redirectUser();
       print(respData);
@@ -159,6 +161,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
       final String errorMsg = respData['message'][0]['messages'][0]['message'];
       _showSnack(errorMsg, false);
     }
+  }
+
+  Future<void> _storeUserData(responseData) async {
+    final prefs = await SharedPreferences.getInstance();
+    Map<String, dynamic> user = responseData['user'];
+    user.putIfAbsent('jwt', () => responseData['jwt']);
+    prefs.setString('user', json.encode(user));
   }
 
   void _showSnack(String text, [bool success = true]) {
