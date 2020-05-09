@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 import './register_screen.dart';
+import './products_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   static const routeName = '/login';
@@ -10,8 +14,10 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final registerUrl = 'http://10.0.2.2:1337/auth/local/';
 
-  var _obscureText = true;
+  var _isSubmitting, _obscureText = true;
 
   String _email, _password;
 
@@ -24,7 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
         padding: const EdgeInsets.only(top: 20.0),
         child: TextFormField(
           onSaved: (val) => _email = val,
-          validator: (val) => !val.contains('@') ? 'Invalid Email' : null,
+          // validator: (val) => !val.contains('@') ? 'Invalid Email' : null,
           decoration: InputDecoration(
             border: OutlineInputBorder(),
             labelText: 'Email',
@@ -68,20 +74,25 @@ class _LoginScreenState extends State<LoginScreen> {
         padding: const EdgeInsets.only(top: 20.0),
         child: Column(
           children: <Widget>[
-            RaisedButton(
-              onPressed: _submit,
-              child: Text(
-                'Submit',
-                style: Theme.of(context).textTheme.bodyText1.copyWith(
-                      color: Colors.black,
+            _isSubmitting == true
+                ? CircularProgressIndicator(
+                    valueColor:
+                        AlwaysStoppedAnimation(Theme.of(context).accentColor),
+                  )
+                : RaisedButton(
+                    onPressed: _submit,
+                    child: Text(
+                      'Submit',
+                      style: Theme.of(context).textTheme.bodyText1.copyWith(
+                            color: Colors.black,
+                          ),
                     ),
-              ),
-              elevation: 8.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10.0)),
-              ),
-              color: Theme.of(context).accentColor,
-            ),
+                    elevation: 8.0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                    ),
+                    color: Theme.of(context).accentColor,
+                  ),
             FlatButton(
               child: Text('New user? Register'),
               onPressed: () => Navigator.pushReplacementNamed(
@@ -97,15 +108,65 @@ class _LoginScreenState extends State<LoginScreen> {
     final form = _formKey.currentState;
     if (form.validate()) {
       form.save();
-      print('Email: $_email, Password: $_password');
+      _registerUser();
+    } else {}
+  }
+
+  Future<void> _registerUser() async {
+    setState(() {
+      _isSubmitting = true;
+    });
+    http.Response response = await http.post(
+      registerUrl,
+      body: {
+        "identifier": _email,
+        "password": _password,
+      },
+    );
+    final respData = json.decode(response.body);
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      setState(() {
+        _isSubmitting = false;
+      });
+      _showSnack('$_email successfully logged in');
+      _redirectUser();
+      print(respData);
     } else {
-      print("Form Invalid");
+      setState(() {
+        _isSubmitting = false;
+      });
+      final String errorMsg = respData['message'][0]['messages'][0]['message'];
+      _showSnack(errorMsg, false);
     }
+  }
+
+  void _showSnack(String text, [bool success = true]) {
+    final snackbar = SnackBar(
+      content: Text(
+        // 'User $_username successfully created',
+        text,
+        style: TextStyle(color: success ? Colors.green : Colors.red),
+      ),
+    );
+    _scaffoldKey.currentState.showSnackBar(snackbar);
+    if (success) {
+      _formKey.currentState.reset();
+    } else {
+      throw Exception('Error logging in: $text');
+    }
+  }
+
+  void _redirectUser() {
+    Future.delayed(Duration(seconds: 2), () {
+      Navigator.pushReplacementNamed(context, ProductsScreen.routeName);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       // appBar: AppBar(
       //   title: Text('Login'),
       //   // leading: Icon(Icons.arrow_back_ios),
