@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import './login_screen.dart';
+import './products_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   static const routeName = '/register';
@@ -13,10 +14,11 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
   final registerUrl = 'http://10.0.2.2:1337/auth/local/register';
 
-  var _obscureText = true;
+  bool _isSubmitting, _obscureText = true;
   String _username, _email, _password;
 
   Widget _showTitle(BuildContext ctx) => Text(
@@ -89,20 +91,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
         padding: const EdgeInsets.only(top: 20.0),
         child: Column(
           children: <Widget>[
-            RaisedButton(
-              onPressed: _submit,
-              child: Text(
-                'Submit',
-                style: Theme.of(context).textTheme.bodyText1.copyWith(
-                      color: Colors.black,
+            _isSubmitting == true
+                ? CircularProgressIndicator(
+                    valueColor:
+                        AlwaysStoppedAnimation(Theme.of(context).primaryColor),
+                  )
+                : RaisedButton(
+                    onPressed: _submit,
+                    child: Text(
+                      'Submit',
+                      style: Theme.of(context).textTheme.bodyText1.copyWith(
+                            color: Colors.black,
+                          ),
                     ),
-              ),
-              elevation: 8.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10.0)),
-              ),
-              color: Theme.of(context).primaryColor,
-            ),
+                    elevation: 8.0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                    ),
+                    color: Theme.of(context).primaryColor,
+                  ),
             FlatButton(
               child: Text('Existing user? Login'),
               onPressed: () => Navigator.pushReplacementNamed(
@@ -125,6 +132,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _registerUser() async {
+    setState(() {
+      _isSubmitting = true;
+    });
     http.Response response = await http.post(
       registerUrl,
       body: {
@@ -134,12 +144,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
       },
     );
     final respData = json.decode(response.body);
+    setState(() {
+      _isSubmitting = false;
+    });
+    _showSuccessSnack();
+    _redirectUser();
     print(respData);
+  }
+
+  void _showSuccessSnack() {
+    final snackbar = SnackBar(
+      content: Text(
+        'User $_username successfully created',
+        style: TextStyle(color: Colors.green),
+      ),
+    );
+    _scaffoldKey.currentState.showSnackBar(snackbar);
+    _formKey.currentState.reset();
+  }
+
+  void _redirectUser() {
+    Future.delayed(Duration(seconds: 2), () {
+      Navigator.pushReplacementNamed(context, ProductsScreen.routeName);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       // appBar: AppBar(
       //   title: Text('Register'),
       //   // leading: Icon(Icons.arrow_back_ios),
@@ -168,3 +201,5 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 }
+
+// cvcvcxcvxvc

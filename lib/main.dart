@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import './screens/register_screen.dart';
 import './screens/login_screen.dart';
+import './screens/products_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -16,6 +17,7 @@ class MyApp extends StatelessWidget {
       routes: {
         LoginScreen.routeName: (BuildContext context) => LoginScreen(),
         RegisterScreen.routeName: (BuildContext context) => RegisterScreen(),
+        ProductsScreen.routeName: (BuildContext context) => ProductsScreen(),
       },
       theme: ThemeData(
         brightness: Brightness.dark,

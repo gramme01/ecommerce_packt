@@ -12,7 +12,7 @@
         "password": "elephant1996"
       },
       "options": {
-        "authenticationDatabase": "",
+        "authenticationDatabase": "admin",
         "ssl": true
       }
     }
