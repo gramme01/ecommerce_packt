@@ -144,23 +144,37 @@ class _RegisterScreenState extends State<RegisterScreen> {
       },
     );
     final respData = json.decode(response.body);
-    setState(() {
-      _isSubmitting = false;
-    });
-    _showSuccessSnack();
-    _redirectUser();
-    print(respData);
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      setState(() {
+        _isSubmitting = false;
+      });
+      _showSnack('User $_username successfully created');
+      _redirectUser();
+      print(respData);
+    } else {
+      setState(() {
+        _isSubmitting = false;
+      });
+      final String errorMsg = respData['message'][0]['messages'][0]['message'];
+      _showSnack(errorMsg, false);
+    }
   }
 
-  void _showSuccessSnack() {
+  void _showSnack(String text, [bool success = true]) {
     final snackbar = SnackBar(
       content: Text(
-        'User $_username successfully created',
-        style: TextStyle(color: Colors.green),
+        // 'User $_username successfully created',
+        text,
+        style: TextStyle(color: success ? Colors.green : Colors.red),
       ),
     );
     _scaffoldKey.currentState.showSnackBar(snackbar);
-    _formKey.currentState.reset();
+    if (success) {
+      _formKey.currentState.reset();
+    } else {
+      throw Exception('Error registering: $text');
+    }
   }
 
   void _redirectUser() {
@@ -202,4 +216,4 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 }
 
-// cvcvcxcvxvc
+// cvcvcxcvxvcvbvcbvbcvbvc zz
