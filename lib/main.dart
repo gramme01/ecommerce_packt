@@ -34,7 +34,8 @@ class MyApp extends StatelessWidget {
         textSelectionHandleColor: Colors.cyan,
         cursorColor: Colors.deepOrange,
       ),
-      home: ProductsScreen(),
+      home: RegisterScreen(),
     );
   }
 }
+//dfgdfgjkhjkjhfgddgfdfgvsdfgdfgdfgkjfsdfsfgdgsdfdsfdsdsdfsdffsdfsdfdsdfdsdfsdfdsdfsfdsdfdsdfsfsfdsdfdsfdfgdfgdfgdgfdgfg
