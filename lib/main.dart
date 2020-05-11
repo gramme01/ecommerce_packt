@@ -9,6 +9,7 @@ import './screens/products_screen.dart';
 
 import './models/app_state.dart';
 import './redux/reducers.dart';
+import './redux/actions.dart';
 
 void main() {
   final store = Store<AppState>(
@@ -34,7 +35,10 @@ class MyApp extends StatelessWidget {
         routes: {
           LoginScreen.routeName: (BuildContext context) => LoginScreen(),
           RegisterScreen.routeName: (BuildContext context) => RegisterScreen(),
-          ProductsScreen.routeName: (BuildContext context) => ProductsScreen(),
+          ProductsScreen.routeName: (BuildContext context) =>
+              ProductsScreen(onInit: () {
+                StoreProvider.of<AppState>(context).dispatch(getUserAction);
+              }),
         },
         theme: ThemeData(
           brightness: Brightness.dark,
@@ -56,3 +60,5 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+////jkhjhl;nbmnbnll;lhjhgj   m,nm,jjkjhjhjhjhjjhkjhmnm,mnmmjk
