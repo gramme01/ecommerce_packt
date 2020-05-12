@@ -26,10 +26,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
       builder: (context, state) {
-        return Text(json.encode(state.user));
+        return state.user != null ? Text(state.user.username) : Text('Loading');
       },
       converter: (store) => store.state,
     );
   }
 }
-//hkewrq vsghiopu hjhghjhh mbgfgfg  jkljlkjkjklj fdgfdgf dfhtugfhipo
+
+//nbmbnmnbnmgfhipo
