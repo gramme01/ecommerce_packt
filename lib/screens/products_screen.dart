@@ -3,6 +3,21 @@ import 'package:flutter_redux/flutter_redux.dart';
 
 import '../models/app_state.dart';
 
+final gradientBackground = BoxDecoration(
+  gradient: LinearGradient(
+    begin: Alignment.bottomLeft,
+    end: Alignment.topRight,
+    colors: <Color>[
+      Colors.deepOrange[300],
+      Colors.deepOrange[400],
+      Colors.deepOrange[500],
+      Colors.deepOrange[600],
+      Colors.deepOrange[700],
+    ],
+    stops: [0.1, 0.3, 0.5, 0.7, 0.9],
+  ),
+);
+
 class ProductsScreen extends StatefulWidget {
   static const routeName = '/products';
   final void Function() onInit;
@@ -28,7 +43,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
           centerTitle: true,
           leading: Icon(Icons.store),
           title: SizedBox(
-            child: Text(state.user != null ? state.user.username : ''),
+            child: Text(state.user != null
+                ? state.user.username.toString().toUpperCase()
+                : ''),
           ),
           actions: <Widget>[
             Padding(
@@ -51,7 +68,16 @@ class _ProductsScreenState extends State<ProductsScreen> {
     return Scaffold(
       appBar: _appBar,
       body: Container(
-        child: Text('Products Page'),
+        decoration: gradientBackground,
+        child: Column(
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Text('Products Page'),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
