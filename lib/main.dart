@@ -32,14 +32,6 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'E-Commerce Packt',
-        routes: {
-          LoginScreen.routeName: (BuildContext context) => LoginScreen(),
-          RegisterScreen.routeName: (BuildContext context) => RegisterScreen(),
-          ProductsScreen.routeName: (BuildContext context) =>
-              ProductsScreen(onInit: () {
-                StoreProvider.of<AppState>(context).dispatch(getUserAction);
-              }),
-        },
         theme: ThemeData(
           brightness: Brightness.dark,
           primaryColor: Colors.cyan[400],
@@ -56,6 +48,15 @@ class MyApp extends StatelessWidget {
           cursorColor: Colors.deepOrange,
         ),
         home: RegisterScreen(),
+        routes: {
+          LoginScreen.routeName: (BuildContext context) => LoginScreen(),
+          RegisterScreen.routeName: (BuildContext context) => RegisterScreen(),
+          ProductsScreen.routeName: (BuildContext context) => ProductsScreen(
+                onInit: () {
+                  StoreProvider.of<AppState>(context).dispatch(getUserAction);
+                },
+              ),
+        },
       ),
     );
   }
