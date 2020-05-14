@@ -35,50 +35,63 @@ class _ProductsScreenState extends State<ProductsScreen> {
     widget.onInit();
   }
 
-  final Widget _appBar = PreferredSize(
-    child: StoreConnector<AppState, AppState>(
-      converter: (store) => store.state,
-      builder: (context, state) {
-        return AppBar(
-          centerTitle: true,
-          leading: Icon(Icons.store),
-          title: SizedBox(
-            child: Text(state.user != null
-                ? state.user.username.toString().toUpperCase()
-                : ''),
-          ),
-          actions: <Widget>[
-            Padding(
-                padding: const EdgeInsets.only(right: 12.0),
-                child: state.user != null
-                    ? IconButton(
-                        icon: Icon(Icons.exit_to_app), //
-                        onPressed: () {},
-                      )
-                    : null),
-          ],
-        );
-      },
-    ),
-    preferredSize: Size.fromHeight(60.0),
-  );
+  Widget _buildAppBar(state) {
+    return PreferredSize(
+      child: AppBar(
+        centerTitle: true,
+        leading: Icon(Icons.store),
+        title: SizedBox(
+          child: Text(state.user != null
+              ? state.user.username.toString().toUpperCase()
+              : ''),
+        ),
+        actions: <Widget>[
+          Padding(
+              padding: const EdgeInsets.only(right: 12.0),
+              child: state.user != null
+                  ? IconButton(
+                      icon: Icon(Icons.exit_to_app), //
+                      onPressed: () {},
+                    )
+                  : null),
+        ],
+      ),
+      preferredSize: Size.fromHeight(60.0),
+    );
+  }
+
+  ///
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _appBar,
-      body: Container(
-        decoration: gradientBackground,
-        child: Column(
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                Text('Products Page'),
-              ],
-            ),
-          ],
-        ),
-      ),
+    return StoreConnector<AppState, AppState>(
+      converter: (store) => store.state,
+      builder: (context, state) {
+        return Scaffold(
+          appBar: _buildAppBar(state),
+          body: Container(
+              decoration: gradientBackground,
+              child: Column(
+                children: <Widget>[
+                  Expanded(
+                    child: SafeArea(
+                      top: false,
+                      bottom: false,
+                      child: GridView.builder(
+                        itemCount: state.products.length,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                        ),
+                        itemBuilder: (BuildContext context, int i) => Text(
+                          state.products[i]['name'],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              )),
+        );
+      },
     );
   }
 }
