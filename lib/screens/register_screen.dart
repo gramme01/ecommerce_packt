@@ -145,7 +145,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       },
     );
     final respData = json.decode(response.body);
-    print("REGISTER SCREEN ${response.statusCode}");
+    // print("REGISTER SCREEN ${response.statusCode}");
     if (response.statusCode == 200) {
       setState(() {
         _isSubmitting = false;
@@ -153,7 +153,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _storeUserData(respData);
       _showSnack('User $_username successfully created');
       _redirectUser();
-      print('REGISTER SCREEN $respData');
+      // print('REGISTER SCREEN $respData');
     } else {
       setState(() {
         _isSubmitting = false;
