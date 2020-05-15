@@ -65,6 +65,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final Orientation orientation = MediaQuery.of(context).orientation;
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,
       builder: (context, state) {
@@ -81,7 +82,12 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       child: GridView.builder(
                         itemCount: state.products.length,
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
+                          crossAxisCount:
+                              orientation == Orientation.portrait ? 2 : 3,
+                          mainAxisSpacing: 4.0,
+                          crossAxisSpacing: 4.0,
+                          childAspectRatio:
+                              orientation == Orientation.portrait ? 1.0 : 1.3,
                         ),
                         itemBuilder: (BuildContext context, int i) =>
                             ProductItem(item: state.products[i]),
