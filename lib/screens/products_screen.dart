@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 import '../models/app_state.dart';
+import '../widgets/product_item.dart';
 
 final gradientBackground = BoxDecoration(
   gradient: LinearGradient(
@@ -82,9 +83,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
                         ),
-                        itemBuilder: (BuildContext context, int i) => Text(
-                          state.products[i]['name'],
-                        ),
+                        itemBuilder: (BuildContext context, int i) =>
+                            ProductItem(item: state.products[i]),
                       ),
                     ),
                   ),
