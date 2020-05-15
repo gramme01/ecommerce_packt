@@ -5,8 +5,9 @@ import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/user.dart';
 import '../models/app_state.dart';
+import '../models/product.dart';
+import '../models/user.dart';
 
 String productUrl = 'http://10.0.2.2:1337/products';
 /* User Actions */
@@ -26,16 +27,22 @@ class GetUserAction {
   User get user => this._user;
 }
 
-/* User Actions */
+/* Product Actions */
 ThunkAction<AppState> getProductsAction = (Store<AppState> store) async {
   final response = await http.get(productUrl);
-  final List<dynamic> respData = json.decode(response.body);
-  store.dispatch(GetProductsAction(respData));
+  final respData = json.decode(response.body);
+  List<Product> products = [];
+  respData.forEach((prodData) {
+    final Product product = Product.fromJson(prodData);
+    products.add(product);
+  });
+
+  store.dispatch(GetProductsAction(products));
 };
 
 class GetProductsAction {
-  final List<dynamic> _products;
+  final List<Product> _products;
   GetProductsAction(this._products);
 
-  List<dynamic> get products => [...this._products];
+  List<Product> get products => [...this._products];
 }

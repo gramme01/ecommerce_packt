@@ -2,6 +2,7 @@ import 'package:e_commerce_packt/models/user.dart';
 import 'package:e_commerce_packt/redux/actions.dart';
 
 import '../models/app_state.dart';
+import '../models/product.dart';
 
 AppState appReducer(AppState state, dynamic action) {
   return AppState(
@@ -23,7 +24,7 @@ User userReducer(User user, dynamic action) {
   return user;
 }
 
-List<dynamic> productsReducer(List<dynamic> products, dynamic action) {
+List<Product> productsReducer(List<Product> products, dynamic action) {
   if (action is GetProductsAction) {
     return action.products;
   }
