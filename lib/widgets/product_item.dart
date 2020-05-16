@@ -15,8 +15,9 @@ class ProductItem extends StatelessWidget {
     final String pictureUrl = "http://10.0.2.2:1337${item.picture['url']}";
 
     return InkWell(
-      onTap: () => Navigator.of(context)
-          .pushNamed(ProductDetailScreen.routeName, arguments: item),
+      onTap: () => Navigator.of(context).pushNamed(
+          ProductDetailScreen.routeName,
+          arguments: {'product': item}),
       child: GridTile(
         child: Image.network(
           pictureUrl,

@@ -8,7 +8,8 @@ class ProductDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Product product = ModalRoute.of(context).settings.arguments;
+    final Map arg = ModalRoute.of(context).settings.arguments as Map;
+    final Product product = arg['product'];
     return Scaffold(
       body: Center(
         child: Text(product.name),
