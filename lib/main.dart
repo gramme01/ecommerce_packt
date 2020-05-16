@@ -1,3 +1,4 @@
+import 'package:e_commerce_packt/screens/product_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
@@ -59,10 +60,11 @@ class MyApp extends StatelessWidget {
                       .dispatch(getProductsAction);
                 },
               ),
+          ProductDetailScreen.routeName: (BuildContext context) =>
+              ProductDetailScreen(),
         },
       ),
     );
   }
 }
 //cjzkhjk
-// jhfkjdjhkcvcxjhjcxjhvjckxjhvjkxjchvkjxv
