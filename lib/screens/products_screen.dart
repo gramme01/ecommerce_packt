@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 import '../models/app_state.dart';
-import '../widgets/product_item.dart';
 import '../redux/actions.dart';
+
+import '../widgets/product_item.dart';
+import './login_screen.dart';
 
 final gradientBackground = BoxDecoration(
   gradient: LinearGradient(
@@ -41,11 +43,20 @@ class _ProductsScreenState extends State<ProductsScreen> {
     return PreferredSize(
       child: AppBar(
         centerTitle: true,
-        leading: Icon(Icons.store),
+        leading: state.user != null ? Icon(Icons.store) : Text(''),
         title: SizedBox(
-          child: Text(state.user != null
-              ? state.user.username.toString().toUpperCase()
-              : ''),
+          child: state.user != null
+              ? Text(
+                  state.user.username.toString().toUpperCase(),
+                )
+              : FlatButton(
+                  child: Text(
+                    'LOG IN',
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                  onPressed: () =>
+                      Navigator.of(context).pushNamed(LoginScreen.routeName),
+                ),
         ),
         actions: <Widget>[
           Padding(
