@@ -65,7 +65,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         padding: const EdgeInsets.only(top: 20.0),
         child: TextFormField(
           onSaved: (val) => _password = val,
-          validator: (val) => val.length < 6 ? 'Username too short' : null,
+          validator: (val) => val.length < 6 ? 'Password too short' : null,
           obscureText: _obscureText,
           decoration: InputDecoration(
             border: OutlineInputBorder(),
@@ -196,10 +196,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      // appBar: AppBar(
-      //   title: Text('Register'),
-      //   // leading: Icon(Icons.arrow_back_ios),
-      // ),
+      appBar: AppBar(
+        // title: Text('Register'),
+        backgroundColor: Colors.transparent,
+        elevation: 0, iconTheme: IconThemeData(color: Colors.white),
+      ),
       body: SafeArea(
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
