@@ -20,7 +20,7 @@ final gradientBackground = BoxDecoration(
 );
 
 class ProductsScreen extends StatefulWidget {
-  static const routeName = '/products';
+  static const routeName = '/';
   final void Function() onInit;
 
   ProductsScreen({this.onInit});
