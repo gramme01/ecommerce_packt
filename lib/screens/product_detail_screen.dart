@@ -21,20 +21,17 @@ class ProductDetailScreen extends StatelessWidget {
           decoration: gradientBackground,
           child: Column(
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10.0),
-                child: Container(
-                  color: Colors.white,
-                  width: double.infinity,
-                  height: orientation == Orientation.portrait ? 500 : 250,
-                  child: Image.network(
-                    pictureUrl,
-                    fit: orientation == Orientation.portrait
-                        ? BoxFit.cover
-                        : BoxFit.contain,
-                  ),
+              Container(
+                // padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                color: Color(0XFFF6F6F6),
+                width: double.infinity,
+                height: orientation == Orientation.portrait ? 400 : 250,
+                child: Image.network(
+                  pictureUrl,
+                  fit: BoxFit.contain,
                 ),
               ),
+              SizedBox(height: 10.0),
               Text(
                 product.name,
                 style: Theme.of(context).textTheme.headline5,
