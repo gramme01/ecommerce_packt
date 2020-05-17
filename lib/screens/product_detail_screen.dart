@@ -26,9 +26,12 @@ class ProductDetailScreen extends StatelessWidget {
                 color: Color(0XFFF6F6F6),
                 width: double.infinity,
                 height: orientation == Orientation.portrait ? 400 : 250,
-                child: Image.network(
-                  pictureUrl,
-                  fit: BoxFit.contain,
+                child: Hero(
+                  tag: product,
+                  child: Image.network(
+                    pictureUrl,
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
               SizedBox(height: 10.0),

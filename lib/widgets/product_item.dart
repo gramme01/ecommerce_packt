@@ -19,9 +19,12 @@ class ProductItem extends StatelessWidget {
           ProductDetailScreen.routeName,
           arguments: {'product': item}),
       child: GridTile(
-        child: Image.network(
-          pictureUrl,
-          fit: BoxFit.cover,
+        child: Hero(
+          tag: item,
+          child: Image.network(
+            pictureUrl,
+            fit: BoxFit.cover,
+          ),
         ),
         footer: GridTileBar(
           title: FittedBox(
