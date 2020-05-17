@@ -17,11 +17,12 @@ AppState appReducer(AppState state, dynamic action) {
 }
 
 User userReducer(User user, dynamic action) {
-  if (action is GetUserAction) {
-    //return user from action
-    return action.user;
+  switch (action) {
+    case GetUserAction:
+      return action.user;
+    default:
+      return user;
   }
-  return user;
 }
 
 List<Product> productsReducer(List<Product> products, dynamic action) {

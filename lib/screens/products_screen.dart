@@ -3,6 +3,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 
 import '../models/app_state.dart';
 import '../widgets/product_item.dart';
+import '../redux/actions.dart';
 
 final gradientBackground = BoxDecoration(
   gradient: LinearGradient(
@@ -48,13 +49,21 @@ class _ProductsScreenState extends State<ProductsScreen> {
         ),
         actions: <Widget>[
           Padding(
-              padding: const EdgeInsets.only(right: 12.0),
-              child: state.user != null
-                  ? IconButton(
-                      icon: Icon(Icons.exit_to_app), //
-                      onPressed: () {},
-                    )
-                  : null),
+            padding: const EdgeInsets.only(right: 12.0),
+            child: StoreConnector<AppState, VoidCallback>(
+              converter: (store) {
+                return () => store.dispatch(logoutUserAction);
+              },
+              builder: (_, callback) {
+                return state.user != null
+                    ? IconButton(
+                        icon: Icon(Icons.exit_to_app), //
+                        onPressed: callback,
+                      )
+                    : Text('');
+              },
+            ),
+          ),
         ],
       ),
       preferredSize: Size.fromHeight(60.0),

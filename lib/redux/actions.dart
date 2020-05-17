@@ -20,6 +20,13 @@ ThunkAction<AppState> getUserAction = (Store<AppState> store) async {
   store.dispatch(GetUserAction(user));
 };
 
+ThunkAction<AppState> logoutUserAction = (Store<AppState> store) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.remove('user');
+  User user;
+  store.dispatch(GetUserAction(user));
+};
+
 class GetUserAction {
   final User _user;
   GetUserAction(this._user);
