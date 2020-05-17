@@ -39,13 +39,14 @@ class MyApp extends StatelessWidget {
           primaryColor: Colors.cyan[400],
           accentColor: Colors.deepOrange[200],
           visualDensity: VisualDensity.adaptivePlatformDensity,
-          textTheme: TextTheme(
-            headline1: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
-            headline5: TextStyle(fontSize: 36.0, fontStyle: FontStyle.italic),
-            bodyText1: TextStyle(
-              fontSize: 18,
-            ),
-          ),
+          textTheme: ThemeData.dark().textTheme.copyWith(
+                headline1:
+                    TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
+                headline5:
+                    TextStyle(fontSize: 36.0, fontStyle: FontStyle.italic),
+                bodyText1: TextStyle(fontSize: 18),
+                bodyText2: TextStyle(fontSize: 16),
+              ),
           textSelectionHandleColor: Colors.cyan,
           cursorColor: Colors.deepOrange,
         ),
