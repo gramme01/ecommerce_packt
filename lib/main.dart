@@ -1,17 +1,18 @@
-import 'package:e_commerce_packt/screens/product_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux_logging/redux_logging.dart';
 
-import './screens/register_screen.dart';
+import './screens/cart_screen.dart';
 import './screens/login_screen.dart';
+import './screens/product_detail_screen.dart';
 import './screens/products_screen.dart';
+import './screens/register_screen.dart';
 
+import './redux/actions.dart';
 import './models/app_state.dart';
 import './redux/reducers.dart';
-import './redux/actions.dart';
 
 void main() {
   final store = Store<AppState>(
@@ -62,6 +63,7 @@ class MyApp extends StatelessWidget {
           RegisterScreen.routeName: (BuildContext context) => RegisterScreen(),
           ProductDetailScreen.routeName: (BuildContext context) =>
               ProductDetailScreen(),
+          CartScreen.routeName: (BuildContext context) => CartScreen(),
         },
       ),
     );

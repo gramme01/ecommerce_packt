@@ -6,6 +6,7 @@ import '../redux/actions.dart';
 
 import '../widgets/product_item.dart';
 import './login_screen.dart';
+import './cart_screen.dart';
 
 final gradientBackground = BoxDecoration(
   gradient: LinearGradient(
@@ -43,7 +44,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
     return PreferredSize(
       child: AppBar(
         centerTitle: true,
-        leading: state.user != null ? Icon(Icons.store) : Text(''),
+        leading: state.user != null
+            ? IconButton(
+                icon: Icon(Icons.store),
+                onPressed: () =>
+                    Navigator.of(context).pushNamed(CartScreen.routeName),
+              )
+            : Text(''),
         title: SizedBox(
           child: state.user != null
               ? Text(
