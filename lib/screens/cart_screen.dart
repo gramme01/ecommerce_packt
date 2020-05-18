@@ -27,7 +27,10 @@ class _CartScreenState extends State<CartScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: Text('Cart'),
+          centerTitle: true,
           bottom: TabBar(
+            labelColor: Colors.white,
+            unselectedLabelColor: Colors.deepOrange[400],
             tabs: [
               Tab(icon: Icon(Icons.shopping_cart)),
               Tab(icon: Icon(Icons.credit_card)),
