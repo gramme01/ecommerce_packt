@@ -29,5 +29,3 @@ List<Product> productsReducer(List<Product> products, dynamic action) {
   }
   return products;
 }
-
-fkdjhhfdjskjhkfjdkshdf
