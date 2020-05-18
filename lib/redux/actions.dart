@@ -57,10 +57,11 @@ class GetProductsAction {
 /* Cart Product Actions */
 ThunkAction<AppState> toggleCartProductAction(Product cartProduct) {
   return (Store<AppState> store) {
-    final List<Product> updatedCartProducts = [...store.state.cartProducts];
-    final int index = updatedCartProducts
-        .indexWhere((product) => product.id == cartProduct.id);
+    final List<Product> cartProducts = store.state.cartProducts;
+    final int index =
+        cartProducts.indexWhere((product) => product.id == cartProduct.id);
     bool isInCart = index > -1;
+    List<Product> updatedCartProducts = List.from(cartProducts);
 
     if (isInCart) {
       updatedCartProducts.removeAt(index);
