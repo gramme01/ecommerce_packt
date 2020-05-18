@@ -4,6 +4,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 
 import '../models/app_state.dart';
 import '../models/product.dart';
+import '../redux/actions.dart';
 
 class ProductItem extends StatelessWidget {
   final Product item;
@@ -42,7 +43,10 @@ class ProductItem extends StatelessWidget {
             builder: (_, state) => state.user != null
                 ? IconButton(
                     icon: Icon(Icons.shopping_cart),
-                    onPressed: () => print('[CART BUTTON] ${item.name}'),
+                    onPressed: () {
+                      StoreProvider.of<AppState>(context)
+                          .dispatch(toggleCartProductAction(item));
+                    },
                   )
                 : Text(''),
           ),
