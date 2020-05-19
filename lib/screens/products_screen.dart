@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:badges/badges.dart';
 
 import '../models/app_state.dart';
 import '../redux/actions.dart';
@@ -40,13 +41,23 @@ class _ProductsScreenState extends State<ProductsScreen> {
     widget.onInit();
   }
 
-  Widget _buildAppBar(state) {
+  Widget _buildAppBar(AppState state) {
     return PreferredSize(
       child: AppBar(
         centerTitle: true,
         leading: state.user != null
             ? IconButton(
-                icon: Icon(Icons.store),
+                icon: Badge(
+                  showBadge: state.cartProducts.isNotEmpty,
+                  position: BadgePosition.topRight(top: -15, right: -10),
+                  animationType: BadgeAnimationType.scale,
+                  badgeColor: Colors.lime,
+                  badgeContent: Text(
+                    '${state.cartProducts.length}',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  child: Icon(Icons.store),
+                ),
                 onPressed: () =>
                     Navigator.of(context).pushNamed(CartScreen.routeName),
               )
