@@ -25,7 +25,7 @@ class _CartScreenState extends State<CartScreen> {
                 child: SafeArea(
                   top: false,
                   bottom: false,
-                  child: state.cartProducts != null
+                  child: state.cartProducts.isNotEmpty
                       ? GridView.builder(
                           itemCount: state.cartProducts.length,
                           gridDelegate:
