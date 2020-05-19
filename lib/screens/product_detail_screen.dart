@@ -74,6 +74,7 @@ class ProductDetailScreen extends StatelessWidget {
                               ),
                               backgroundColor: Colors.grey[900],
                             );
+                            _scaffoldKey.currentState.removeCurrentSnackBar();
                             _scaffoldKey.currentState.showSnackBar(snackbar);
                           },
                         )

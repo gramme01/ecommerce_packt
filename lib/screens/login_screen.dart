@@ -157,6 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
         text,
         style: TextStyle(color: success ? Colors.green : Colors.red),
       ),
+      backgroundColor: Colors.grey[900],
     );
     _scaffoldKey.currentState.showSnackBar(snackbar);
     if (success) {
