@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 
+import '../redux/actions.dart';
+import '../models/app_state.dart';
 import '../models/product.dart';
 import './products_screen.dart';
 
 class ProductDetailScreen extends StatelessWidget {
   static const routeName = '/product-detail';
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  bool _isInCart(AppState state, String id) {
+    final List<Product> cartProducts = state.cartProducts;
+    return cartProducts.indexWhere((cartProduct) => cartProduct.id == id) > -1;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,6 +22,7 @@ class ProductDetailScreen extends StatelessWidget {
     final Product product = arg['product'];
     final String pictureUrl = "http://10.0.2.2:1337${product.picture['url']}";
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text(product.name),
       ),
@@ -42,6 +52,33 @@ class ProductDetailScreen extends StatelessWidget {
               Text(
                 '\$${product.price}',
                 style: Theme.of(context).textTheme.bodyText1,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                child: StoreConnector<AppState, AppState>(
+                  converter: (store) => store.state,
+                  builder: (_, state) => state.user != null
+                      ? IconButton(
+                          icon: Icon(Icons.shopping_cart),
+                          color: _isInCart(state, product.id)
+                              ? Colors.cyan[700]
+                              : Colors.white,
+                          onPressed: () {
+                            StoreProvider.of<AppState>(context)
+                                .dispatch(toggleCartProductAction(product));
+                            final snackbar = SnackBar(
+                              duration: Duration(seconds: 2),
+                              content: Text(
+                                'Cart Updated',
+                                style: TextStyle(color: Colors.green),
+                              ),
+                              backgroundColor: Colors.grey[900],
+                            );
+                            _scaffoldKey.currentState.showSnackBar(snackbar);
+                          },
+                        )
+                      : Text(''),
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.only(
