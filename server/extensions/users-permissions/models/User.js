@@ -38,8 +38,6 @@ module.exports = {
     model.set('cart_id', cart.data.id);
   },
 
-  fdfgkfldkfgfkdjlkgfdfgkjdfgkjgdfkjfkgljdfkgldfgjfdlgjfl
-
   // After creating a value.
   // Fired after an `insert` query.
   // afterCreate: async (model, attrs, options) => {},
