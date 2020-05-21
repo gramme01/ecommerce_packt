@@ -8,15 +8,14 @@ const { parseMultipartData, sanitizeEntity } = require('strapi-utils');
  */
 
 module.exports = {
-  update: async (ctx, next) => {
+
+  async update(ctx) {
+    const { id } = ctx.params;
+    let entity;
+
     const { products } = ctx.request.body;
-    return strapi.services.cart.update(ctx.params, {
-      products: JSON.parse(products)
-    })
+    entity = await strapi.services.cart.update({ id }, { products: JSON.parse(products) });
+
+    return sanitizeEntity(entity, { model: strapi.models.cart });
   }
-
-  // async update(ctx) {
-  //   const {products} = ctx.request.body;
-
-  // }
 };
