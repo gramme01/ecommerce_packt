@@ -1,7 +1,7 @@
 'use strict';
-
+require('dotenv').config();
 const axios = require('axios');
-const stripe = require('stripe')('sk_test_o93KLdbM8R6C937eKwHDBPeP00qwK412GI');
+const stripe = require('stripe')(`${process.env.STRIPE_TEST}`);
 
 /**
  * Lifecycle callbacks for the `product` model.

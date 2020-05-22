@@ -11,7 +11,9 @@ import '../models/user.dart';
 
 String productUrl = 'http://10.0.2.2:1337/products';
 String cartProductUrl = 'http://10.0.2.2:1337/carts';
-/* User Actions */
+String cardUrl = 'http://10.0.2.2:1337/card';
+
+// User Actions
 ThunkAction<AppState> getUserAction = (Store<AppState> store) async {
   final prefs = await SharedPreferences.getInstance();
   final String storedUser = prefs.getString('user');
@@ -55,7 +57,7 @@ class GetProductsAction {
   List<Product> get products => [...this._products];
 }
 
-/* Cart Product Actions */
+// Cart Product Actions
 ThunkAction<AppState> toggleCartProductAction(Product cartProduct) {
   return (Store<AppState> store) async {
     final List<Product> cartProducts = store.state.cartProducts;
@@ -116,4 +118,21 @@ class GetCartProductsAction {
   GetCartProductsAction(this._cartProducts);
 
   List<Product> get cartProducts => this._cartProducts;
+}
+
+// Card Actions
+ThunkAction<AppState> getCardsAction = (Store<AppState> store) async {
+  final String customerId = store.state.user.customerId;
+  final http.Response response = await http.get('$cardUrl?$customerId');
+  final respData = json.decode(response.body);
+
+  // print('[CardData]: $respData');
+  store.dispatch(GetCardsAction(respData));
+};
+
+class GetCardsAction {
+  final List<dynamic> _cards;
+  GetCardsAction(this._cards);
+
+  List<dynamic> get cards => this._cards;
 }

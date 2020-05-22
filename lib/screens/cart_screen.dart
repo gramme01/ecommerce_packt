@@ -7,11 +7,21 @@ import './products_screen.dart';
 
 class CartScreen extends StatefulWidget {
   static const routeName = '/cart';
+
+  final void Function() onInit;
+  CartScreen({this.onInit});
+
   @override
   _CartScreenState createState() => _CartScreenState();
 }
 
 class _CartScreenState extends State<CartScreen> {
+  @override
+  void initState() {
+    super.initState();
+    widget.onInit();
+  }
+
   Widget _cartTab() {
     Orientation orientation = MediaQuery.of(context).orientation;
     return StoreConnector<AppState, AppState>(
@@ -53,7 +63,49 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   Widget _cardTab() {
-    return Text('Card');
+    return StoreConnector<AppState, AppState>(
+        converter: (store) => store.state,
+        builder: (_, state) {
+          return Column(
+            children: <Widget>[
+              Expanded(
+                child: ListView(
+                  children: state.cards
+                      .map<Widget>(
+                        (card) => ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: Colors.deepOrange,
+                            child: Icon(
+                              Icons.credit_card,
+                              color: Colors.white,
+                            ),
+                          ),
+                          title: Text(
+                              "${card['exp_month']}/${card['exp_year']}, ${card['last4']}"),
+                          subtitle: Text("${card['brand']}"),
+                          trailing: FlatButton(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10.0),
+                              ),
+                            ),
+                            child: Text(
+                              'Set as Primary',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.deepOrange,
+                              ),
+                            ),
+                            onPressed: () => print('Pressed'),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
+              )
+            ],
+          );
+        });
   }
 
   Widget _ordersTab() {
@@ -71,7 +123,7 @@ class _CartScreenState extends State<CartScreen> {
           centerTitle: true,
           bottom: TabBar(
             labelColor: Colors.white,
-            unselectedLabelColor: Colors.deepOrange[400],
+            unselectedLabelColor: Colors.cyan[100],
             tabs: [
               Tab(icon: Icon(Icons.shopping_cart)),
               Tab(icon: Icon(Icons.credit_card)),
