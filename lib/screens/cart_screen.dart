@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+// import 'package:stripe_payment/stripe_payment.dart';
 
 import '../models/app_state.dart';
 import '../widgets/product_item.dart';
@@ -20,6 +21,11 @@ class _CartScreenState extends State<CartScreen> {
   void initState() {
     super.initState();
     widget.onInit();
+    // StripePayment.setOptions(
+    //   StripeOptions(
+    //     publishableKey: 'pk_test_LalRFS5Tqdn4sPC3x65dftqs005QbAGBZx',
+    //   ),
+    // );
   }
 
   Widget _cartTab() {
@@ -68,6 +74,12 @@ class _CartScreenState extends State<CartScreen> {
         builder: (_, state) {
           return Column(
             children: <Widget>[
+              Padding(padding: const EdgeInsets.only(top: 10.0)),
+              RaisedButton(
+                elevation: 8.0,
+                child: Text('Add Card'),
+                onPressed: () => print('ADD CART Pressed'),
+              ),
               Expanded(
                 child: ListView(
                   children: state.cards
@@ -96,7 +108,9 @@ class _CartScreenState extends State<CartScreen> {
                                 color: Colors.deepOrange,
                               ),
                             ),
-                            onPressed: () => print('Pressed'),
+                            onPressed: () async {
+                              //  final String cardToken = await StripePayment.createTokenWithCard(card);
+                            },
                           ),
                         ),
                       )

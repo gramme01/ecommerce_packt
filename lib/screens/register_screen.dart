@@ -153,7 +153,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _storeUserData(respData);
       _showSnack('User $_username successfully created');
       _redirectUser();
-      // print('REGISTER SCREEN $respData');
+      print('REGISTER SCREEN $respData');
     } else {
       setState(() {
         _isSubmitting = false;
