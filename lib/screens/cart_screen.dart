@@ -1,8 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-// import 'package:stripe_payment/stripe_payment.dart';
+import 'package:stripe_payment/stripe_payment.dart';
+import 'package:http/http.dart' as http;
 
+import '../models/user.dart';
 import '../models/app_state.dart';
+import '../redux/actions.dart';
 import '../widgets/product_item.dart';
 import './products_screen.dart';
 
@@ -17,15 +22,19 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
+  String userUrl = 'http://10.0.2.2:1337/users';
+  String cardUrl = 'http://10.0.2.2:1337/card';
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   void initState() {
     super.initState();
     widget.onInit();
-    // StripePayment.setOptions(
-    //   StripeOptions(
-    //     publishableKey: 'pk_test_LalRFS5Tqdn4sPC3x65dftqs005QbAGBZx',
-    //   ),
-    // );
+    StripePayment.setOptions(
+      StripeOptions(
+        publishableKey: 'pk_test_LalRFS5Tqdn4sPC3x65dftqs005QbAGBZx',
+      ),
+    );
   }
 
   Widget _cartTab() {
@@ -72,19 +81,63 @@ class _CartScreenState extends State<CartScreen> {
     return StoreConnector<AppState, AppState>(
         converter: (store) => store.state,
         builder: (_, state) {
+          _addCard(String cardToken) async {
+            final User user = state.user;
+            //add cardtoken to user data
+            await http.put(
+              '$userUrl/${user.id}',
+              body: {"card_token": cardToken},
+              headers: {"Authorization": "Bearer ${user.jwt}"},
+            );
+
+            //link added card to stripe customer
+            http.Response response = await http.post(
+              '$cardUrl/add',
+              body: {"source": cardToken, "user": user.customerId},
+            );
+
+            final respData = json.decode(response.body);
+            return respData;
+          }
+
           return Column(
             children: <Widget>[
               Padding(padding: const EdgeInsets.only(top: 10.0)),
               RaisedButton(
                 elevation: 8.0,
                 child: Text('Add Card'),
-                onPressed: () => print('ADD CART Pressed'),
+                onPressed: () async {
+                  print('pressed');
+                  final PaymentMethod paymentMethod =
+                      await StripePayment.paymentRequestWithCardForm(
+                          CardFormPaymentRequest());
+                  final card = await _addCard(paymentMethod.id);
+                  //
+                  //AddCard Action
+                  StoreProvider.of<AppState>(context)
+                      .dispatch(AddCardAction(card));
+                  //
+                  //Update Card Token action
+                  StoreProvider.of<AppState>(context).dispatch(
+                    UpdateCardTokenAction(card['id']),
+                  );
+//
+                  //show snackbar
+                  final snackbar = SnackBar(
+                    content: Text(
+                      'Card Added',
+                      style: TextStyle(color: Colors.green),
+                    ),
+                    backgroundColor: Colors.grey[900],
+                  );
+                  _scaffoldKey.currentState.showSnackBar(snackbar);
+                },
               ),
               Expanded(
                 child: ListView(
                   children: state.cards
                       .map<Widget>(
-                        (card) => ListTile(
+                        (c) => ListTile(
                           leading: CircleAvatar(
                             backgroundColor: Colors.deepOrange,
                             child: Icon(
@@ -93,8 +146,8 @@ class _CartScreenState extends State<CartScreen> {
                             ),
                           ),
                           title: Text(
-                              "${card['exp_month']}/${card['exp_year']}, ${card['last4']}"),
-                          subtitle: Text("${card['brand']}"),
+                              "${c['card']['exp_month']}/${c['card']['exp_year']}, ${c['card']['last4']}"),
+                          subtitle: Text("${c['card']['brand']}"),
                           trailing: FlatButton(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.all(
@@ -132,6 +185,7 @@ class _CartScreenState extends State<CartScreen> {
       length: 3,
       initialIndex: 0,
       child: Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           title: Text('Cart'),
           centerTitle: true,

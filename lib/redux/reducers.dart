@@ -6,23 +6,26 @@ import '../models/product.dart';
 
 AppState appReducer(AppState state, dynamic action) {
   return AppState(
-    user: userReducer(
-      state.user,
-      action,
-    ),
-    products: productsReducer(
-      state.products,
-      action,
-    ),
-    cartProducts: cartProductsReducer(
-      state.cartProducts,
-      action,
-    ),
-    cards: cardsReducer(
-      state.cards,
-      action,
-    ),
-  );
+      user: userReducer(
+        state.user,
+        action,
+      ),
+      products: productsReducer(
+        state.products,
+        action,
+      ),
+      cartProducts: cartProductsReducer(
+        state.cartProducts,
+        action,
+      ),
+      cards: cardsReducer(
+        state.cards,
+        action,
+      ),
+      cardToken: cardTokenReducer(
+        state.cardToken,
+        action,
+      ));
 }
 
 User userReducer(User user, dynamic action) {
@@ -54,5 +57,15 @@ List<dynamic> cardsReducer(List<dynamic> cards, dynamic action) {
   if (action is GetCardsAction) {
     return action.cards;
   }
+  if (action is AddCardAction) {
+    return List.from(cards)..add(action.card);
+  }
   return cards;
+}
+
+String cardTokenReducer(String cardToken, dynamic action) {
+  if (action is UpdateCardTokenAction) {
+    return action.cardToken;
+  }
+  return cardToken;
 }

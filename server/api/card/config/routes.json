@@ -4,6 +4,11 @@
       "method": "GET",
       "path": "/card",
       "handler": "card.index"
+    },
+    {
+      "method": "POST",
+      "path": "/card/add",
+      "handler": "card.add"
     }
   ]
 }
