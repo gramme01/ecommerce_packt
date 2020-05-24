@@ -93,7 +93,7 @@ class _CartScreenState extends State<CartScreen> {
             //link added card to stripe customer
             http.Response response = await http.post(
               '$cardUrl/add',
-              body: {"source": cardToken, "user": user.customerId},
+              body: {"source": cardToken, "customer": user.customerId},
             );
 
             final respData = json.decode(response.body);
@@ -112,16 +112,16 @@ class _CartScreenState extends State<CartScreen> {
                       await StripePayment.paymentRequestWithCardForm(
                           CardFormPaymentRequest());
                   final card = await _addCard(paymentMethod.id);
-                  //
+
                   //AddCard Action
                   StoreProvider.of<AppState>(context)
                       .dispatch(AddCardAction(card));
-                  //
+
                   //Update Card Token action
                   StoreProvider.of<AppState>(context).dispatch(
                     UpdateCardTokenAction(card['id']),
                   );
-//
+
                   //show snackbar
                   final snackbar = SnackBar(
                     content: Text(
@@ -135,39 +135,41 @@ class _CartScreenState extends State<CartScreen> {
               ),
               Expanded(
                 child: ListView(
-                  children: state.cards
-                      .map<Widget>(
-                        (c) => ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: Colors.deepOrange,
-                            child: Icon(
-                              Icons.credit_card,
-                              color: Colors.white,
-                            ),
-                          ),
-                          title: Text(
-                              "${c['card']['exp_month']}/${c['card']['exp_year']}, ${c['card']['last4']}"),
-                          subtitle: Text("${c['card']['brand']}"),
-                          trailing: FlatButton(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(10.0),
+                  children: state.cards != null
+                      ? state.cards
+                          .map<Widget>(
+                            (c) => ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: Colors.deepOrange,
+                                child: Icon(
+                                  Icons.credit_card,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              title: Text(
+                                  "${c['card']['exp_month']}/${c['card']['exp_year']}, ${c['card']['last4']}"),
+                              subtitle: Text("${c['card']['brand']}"),
+                              trailing: FlatButton(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(10.0),
+                                  ),
+                                ),
+                                child: Text(
+                                  'Set as Primary',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.deepOrange,
+                                  ),
+                                ),
+                                onPressed: () async {
+                                  //  final String cardToken = await StripePayment.createTokenWithCard(card);
+                                },
                               ),
                             ),
-                            child: Text(
-                              'Set as Primary',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.deepOrange,
-                              ),
-                            ),
-                            onPressed: () async {
-                              //  final String cardToken = await StripePayment.createTokenWithCard(card);
-                            },
-                          ),
-                        ),
-                      )
-                      .toList(),
+                          )
+                          .toList()
+                      : Text('${state.cardToken}'),
                 ),
               )
             ],
