@@ -93,7 +93,7 @@ class _CartScreenState extends State<CartScreen> {
             //link added card to stripe customer
             http.Response response = await http.post(
               '$cardUrl/add',
-              body: {"source": cardToken, "customer": user.customerId},
+              body: {"paymentMethodId": cardToken, "customer": user.customerId},
             );
 
             final respData = json.decode(response.body);
