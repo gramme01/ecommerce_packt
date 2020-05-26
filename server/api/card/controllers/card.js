@@ -19,14 +19,17 @@ module.exports = {
   async index(ctx) {
     // ctx.send('hello world');
     const customerId = ctx.request.querystring;
+    console.log(customerId);
     const customerData = await stripe.customers.retrieve(customerId);
     const cardData = customerData.sources.data;
+    console.log(cardData);
     ctx.send(cardData);
   },
 
   async add(ctx) {
     const { customer, source } = ctx.request.body;
     const card = await stripe.paymentMethods.attach(source, { customer });
+    // const card = await stripe.customers.createSource(customer, { source });
     ctx.send(card);
     // ctx.send('sent')
   }
