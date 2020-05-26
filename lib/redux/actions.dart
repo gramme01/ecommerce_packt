@@ -124,6 +124,7 @@ class GetCartProductsAction {
 ThunkAction<AppState> getCardsAction = (Store<AppState> store) async {
   final String customerId = store.state.user.customerId;
   final http.Response response = await http.get('$cardUrl?$customerId');
+  print('GET URL \n $cardUrl?$customerId');
   final respData = json.decode(response.body);
 
   // print('[CardData]: $respData');
