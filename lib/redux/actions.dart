@@ -152,3 +152,11 @@ class UpdateCardTokenAction {
 
   String get cardToken => this._cardToken;
 }
+
+ThunkAction<AppState> getCardTokenAction = (Store<AppState> store) async {
+  final prefs = await SharedPreferences.getInstance();
+  final String storedCardToken = prefs.getString('cardToken');
+  final cardToken = storedCardToken != null ? storedCardToken : '';
+
+  store.dispatch(UpdateCardTokenAction(cardToken));
+};
