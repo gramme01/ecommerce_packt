@@ -2,11 +2,17 @@
   "routes": [
     {
       "method": "PUT",
-      "path": "/users/me",
-      "handler": "User.updateMe",
+      "path": "/users/:id",
+      "handler": "User.update",
       "config": {
         "policies": [],
-        "prefix": ""
+        "prefix": "",
+        "description": "Update an existing user",
+        "tag": {
+          "plugin": "users-permissions",
+          "name": "User",
+          "actionType": "update"
+        }
       }
     }
   ]
