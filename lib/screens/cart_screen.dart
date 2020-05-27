@@ -156,7 +156,10 @@ class _CartScreenState extends State<CartScreen> {
                                         color: Colors.white,
                                       ),
                                     ),
-                                    label: Text('Primary Card'),
+                                    label: Text(
+                                      'Primary Card',
+                                      style: TextStyle(fontSize: 13),
+                                    ),
                                   )
                                 : FlatButton(
                                     shape: RoundedRectangleBorder(
@@ -164,6 +167,7 @@ class _CartScreenState extends State<CartScreen> {
                                         Radius.circular(10.0),
                                       ),
                                     ),
+                                    color: Colors.grey[900],
                                     child: Text(
                                       'Set as Primary',
                                       style: TextStyle(
@@ -171,8 +175,11 @@ class _CartScreenState extends State<CartScreen> {
                                         color: Colors.deepOrange,
                                       ),
                                     ),
-                                    onPressed: () async {
-                                      //  final String cardToken = await StripePayment.createTokenWithCard(card);
+                                    onPressed: () {
+                                      StoreProvider.of<AppState>(context)
+                                          .dispatch(
+                                        toggleCardTokenAction(c['id']),
+                                      );
                                     },
                                   ),
                           ),

@@ -12,6 +12,7 @@ import '../models/user.dart';
 String productUrl = 'http://10.0.2.2:1337/products';
 String cartProductUrl = 'http://10.0.2.2:1337/carts';
 String cardUrl = 'http://10.0.2.2:1337/card';
+String userUrl = 'http://10.0.2.2:1337/users';
 
 // User Actions
 ThunkAction<AppState> getUserAction = (Store<AppState> store) async {
@@ -151,4 +152,26 @@ class UpdateCardTokenAction {
   UpdateCardTokenAction(this._cardToken);
 
   String get cardToken => this._cardToken;
+}
+
+ThunkAction<AppState> getCardTokenAction = (Store<AppState> store) async {
+  final prefs = await SharedPreferences.getInstance();
+  final String storedCardToken = prefs.getString('cardToken');
+  final cardToken = storedCardToken != null ? storedCardToken : '';
+
+  store.dispatch(UpdateCardTokenAction(cardToken));
+};
+
+ThunkAction<AppState> toggleCardTokenAction(String newCardToken) {
+  return (Store<AppState> store) async {
+    // final String cardToken = store.state.cardToken;
+    final User user = store.state.user;
+
+    await http.put(
+      '$userUrl/${user.id}',
+      body: {"card_token": newCardToken},
+      headers: {"Authorization": "Bearer ${user.jwt}"},
+    );
+    store.dispatch(UpdateCardTokenAction(newCardToken));
+  };
 }

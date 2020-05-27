@@ -133,7 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
       _storeUserData(respData);
       _showSnack('${_email.trim()} successfully logged in');
       _redirectUser();
-      // print('LOGIN SCREEN $respData');
+      print('LOGIN SCREEN ${json.encode(respData)}');
     } else {
       setState(() {
         _isSubmitting = false;
@@ -148,6 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
     Map<String, dynamic> user = responseData['user'];
     user.putIfAbsent('jwt', () => responseData['jwt']);
     prefs.setString('user', json.encode(user));
+    prefs.setString('cardToken', json.encode(user['card_token']));
   }
 
   void _showSnack(String text, [bool success = true]) {
