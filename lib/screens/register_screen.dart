@@ -168,7 +168,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     Map<String, dynamic> user = responseData['user'];
     user.putIfAbsent('jwt', () => responseData['jwt']);
     prefs.setString('user', json.encode(user));
-    prefs.setString('cardToken', json.encode(user['card_token']));
+    prefs.setString('cardToken', user['card_token']);
   }
 
   void _showSnack(String text, [bool success = true]) {
