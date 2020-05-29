@@ -37,158 +37,141 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
-  Widget _cartTab() {
+  Widget _cartTab(state) {
     Orientation orientation = MediaQuery.of(context).orientation;
-    return StoreConnector<AppState, AppState>(
-      converter: (store) => store.state,
-      builder: (context, state) {
-        return Container(
-          decoration: gradientBackground,
-          child: Column(
-            children: <Widget>[
-              Expanded(
-                child: SafeArea(
-                  top: false,
-                  bottom: false,
-                  child: state.cartProducts.isNotEmpty
-                      ? GridView.builder(
-                          itemCount: state.cartProducts.length,
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount:
-                                orientation == Orientation.portrait ? 2 : 3,
-                            mainAxisSpacing: 4.0,
-                            crossAxisSpacing: 4.0,
-                            childAspectRatio:
-                                orientation == Orientation.portrait ? 1.0 : 1.3,
-                          ),
-                          itemBuilder: (BuildContext context, int i) =>
-                              ProductItem(item: state.cartProducts[i]),
-                        )
-                      : Center(
-                          child: Text("Cart is Empty"),
-                        ),
-                ),
-              ),
-            ],
+    return Container(
+      decoration: gradientBackground,
+      child: Column(
+        children: <Widget>[
+          Expanded(
+            child: SafeArea(
+              top: false,
+              bottom: false,
+              child: state.cartProducts.isNotEmpty
+                  ? GridView.builder(
+                      itemCount: state.cartProducts.length,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount:
+                            orientation == Orientation.portrait ? 2 : 3,
+                        mainAxisSpacing: 4.0,
+                        crossAxisSpacing: 4.0,
+                        childAspectRatio:
+                            orientation == Orientation.portrait ? 1.0 : 1.3,
+                      ),
+                      itemBuilder: (BuildContext context, int i) =>
+                          ProductItem(item: state.cartProducts[i]),
+                    )
+                  : Center(
+                      child: Text("Cart is Empty"),
+                    ),
+            ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 
-  Widget _cardTab() {
-    return StoreConnector<AppState, AppState>(
-        converter: (store) => store.state,
-        builder: (_, state) {
-          _addCard(String cardToken) async {
-            final User user = state.user;
-            //add cardtoken to user data
-            await http.put(
-              '$userUrl/${user.id}',
-              body: {"card_token": cardToken},
-              headers: {"Authorization": "Bearer ${user.jwt}"},
-            );
+  Widget _cardTab(state) {
+    _addCard(String cardToken) async {
+      final User user = state.user;
+      await http.put(
+        '$userUrl/${user.id}',
+        body: {"card_token": cardToken},
+        headers: {"Authorization": "Bearer ${user.jwt}"},
+      ); //add cardtoken to user data
+      http.Response response = await http.post(
+        '$cardUrl/add',
+        body: {"paymentMethodId": cardToken, "customer": user.customerId},
+      ); //link added card to stripe customer
 
-            //link added card to stripe customer
-            http.Response response = await http.post(
-              '$cardUrl/add',
-              body: {"paymentMethodId": cardToken, "customer": user.customerId},
-            );
+      final respData = json.decode(response.body);
+      return respData;
+    }
 
-            final respData = json.decode(response.body);
-            return respData;
-          }
+    return Column(
+      children: <Widget>[
+        Padding(padding: const EdgeInsets.only(top: 10.0)),
+        RaisedButton(
+          elevation: 8.0,
+          child: Text('Add Card'),
+          onPressed: () async {
+            final PaymentMethod paymentMethod =
+                await StripePayment.paymentRequestWithCardForm(
+                    CardFormPaymentRequest());
+            final card = await _addCard(paymentMethod.id);
 
-          return Column(
-            children: <Widget>[
-              Padding(padding: const EdgeInsets.only(top: 10.0)),
-              RaisedButton(
-                elevation: 8.0,
-                child: Text('Add Card'),
-                onPressed: () async {
-                  final PaymentMethod paymentMethod =
-                      await StripePayment.paymentRequestWithCardForm(
-                          CardFormPaymentRequest());
-                  final card = await _addCard(paymentMethod.id);
+            StoreProvider.of<AppState>(context)
+                .dispatch(AddCardAction(card)); //AddCard Action
 
-                  //AddCard Action
-                  StoreProvider.of<AppState>(context)
-                      .dispatch(AddCardAction(card));
+            StoreProvider.of<AppState>(context).dispatch(
+                UpdateCardTokenAction(card['id'])); //Update Card Token action
 
-                  //Update Card Token action
-                  StoreProvider.of<AppState>(context).dispatch(
-                    UpdateCardTokenAction(card['id']),
-                  );
-
-                  //show snackbar
-                  final snackbar = SnackBar(
-                    content: Text(
-                      'Card Added',
-                      style: TextStyle(color: Colors.green),
-                    ),
-                    backgroundColor: Colors.grey[900],
-                  );
-                  _scaffoldKey.currentState.showSnackBar(snackbar);
-                },
+            //show snackbar
+            final snackbar = SnackBar(
+              content: Text(
+                'Card Added',
+                style: TextStyle(color: Colors.green),
               ),
-              Expanded(
-                child: ListView(
-                    children: state.cards
-                        .map<Widget>(
-                          (c) => ListTile(
-                            leading: CircleAvatar(
-                              backgroundColor: Colors.deepOrange,
-                              child: Icon(
-                                Icons.credit_card,
-                                color: Colors.white,
+              backgroundColor: Colors.grey[900],
+            );
+            _scaffoldKey.currentState.showSnackBar(snackbar);
+          },
+        ),
+        Expanded(
+          child: ListView(
+              children: state.cards
+                  .map<Widget>(
+                    (c) => ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.deepOrange,
+                        child: Icon(
+                          Icons.credit_card,
+                          color: Colors.white,
+                        ),
+                      ),
+                      title: Text(
+                          "${c['card']['exp_month']}/${c['card']['exp_year']}, ${c['card']['last4']}"),
+                      subtitle: Text("${c['card']['brand']}"),
+                      trailing: state.cardToken == c['id']
+                          ? Chip(
+                              avatar: CircleAvatar(
+                                backgroundColor: Colors.green,
+                                child: Icon(
+                                  Icons.check_circle,
+                                  color: Colors.white,
+                                ),
                               ),
+                              label: Text(
+                                'Primary Card',
+                                style: TextStyle(fontSize: 13),
+                              ),
+                            )
+                          : FlatButton(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(10.0),
+                                ),
+                              ),
+                              color: Colors.grey[900],
+                              child: Text(
+                                'Set as Primary',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.deepOrange,
+                                ),
+                              ),
+                              onPressed: () {
+                                StoreProvider.of<AppState>(context).dispatch(
+                                  toggleCardTokenAction(c['id']),
+                                );
+                              },
                             ),
-                            title: Text(
-                                "${c['card']['exp_month']}/${c['card']['exp_year']}, ${c['card']['last4']}"),
-                            subtitle: Text("${c['card']['brand']}"),
-                            trailing: state.cardToken == c['id']
-                                ? Chip(
-                                    avatar: CircleAvatar(
-                                      backgroundColor: Colors.green,
-                                      child: Icon(
-                                        Icons.check_circle,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    label: Text(
-                                      'Primary Card',
-                                      style: TextStyle(fontSize: 13),
-                                    ),
-                                  )
-                                : FlatButton(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(10.0),
-                                      ),
-                                    ),
-                                    color: Colors.grey[900],
-                                    child: Text(
-                                      'Set as Primary',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.deepOrange,
-                                      ),
-                                    ),
-                                    onPressed: () {
-                                      StoreProvider.of<AppState>(context)
-                                          .dispatch(
-                                        toggleCardTokenAction(c['id']),
-                                      );
-                                    },
-                                  ),
-                          ),
-                        )
-                        .toList()),
-              )
-            ],
-          );
-        });
+                    ),
+                  )
+                  .toList()),
+        )
+      ],
+    );
   }
 
   Widget _ordersTab() {
@@ -197,30 +180,41 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      initialIndex: 0,
-      child: Scaffold(
-        key: _scaffoldKey,
-        appBar: AppBar(
-          title: Text('Cart'),
-          centerTitle: true,
-          bottom: TabBar(
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.cyan[100],
-            tabs: [
-              Tab(icon: Icon(Icons.shopping_cart)),
-              Tab(icon: Icon(Icons.credit_card)),
-              Tab(icon: Icon(Icons.receipt)),
+    return StoreConnector<AppState, AppState>(
+      converter: (store) => store.state,
+      builder: (context, state) => DefaultTabController(
+        length: 3,
+        initialIndex: 0,
+        child: Scaffold(
+          key: _scaffoldKey,
+          appBar: AppBar(
+            title: Text('Cart'),
+            centerTitle: true,
+            bottom: TabBar(
+              labelColor: Colors.white,
+              unselectedLabelColor: Colors.cyan[100],
+              tabs: [
+                Tab(icon: Icon(Icons.shopping_cart)),
+                Tab(icon: Icon(Icons.credit_card)),
+                Tab(icon: Icon(Icons.receipt)),
+              ],
+            ),
+          ),
+          body: TabBarView(
+            children: [
+              _cartTab(state),
+              _cardTab(state),
+              _ordersTab(),
             ],
           ),
-        ),
-        body: TabBarView(
-          children: [
-            _cartTab(),
-            _cardTab(),
-            _ordersTab(),
-          ],
+          floatingActionButton: state.cartProducts.length > 0
+              ? FloatingActionButton(
+                  child: Icon(
+                    Icons.store,
+                    size: 30,
+                  ),
+                  onPressed: null)
+              : Text(''),
         ),
       ),
     );
