@@ -251,6 +251,7 @@ class _CartScreenState extends State<CartScreen> {
               onPressed: () => Navigator.of(context).pop(false),
             ),
             RaisedButton(
+              color: Colors.green,
               child: Text(
                 'Checkout',
                 style: TextStyle(color: Colors.white),
