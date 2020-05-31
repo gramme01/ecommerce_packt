@@ -76,5 +76,8 @@ List<Order> ordersReducer(List<Order> orders, dynamic action) {
   if (action is AddOrderAction) {
     return List<Order>.from(orders)..add(action.order);
   }
+  if (action is GetOrdersAction) {
+    return action.orders;
+  }
   return orders;
 }

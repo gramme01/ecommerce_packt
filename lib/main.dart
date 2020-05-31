@@ -61,6 +61,7 @@ class MyApp extends StatelessWidget {
                       .dispatch(getCartProductsAction);
                   StoreProvider.of<AppState>(context)
                       .dispatch(getCardTokenAction);
+                  StoreProvider.of<AppState>(context).dispatch(getOrdersAction);
                 },
               ),
           LoginScreen.routeName: (BuildContext context) => LoginScreen(),

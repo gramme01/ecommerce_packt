@@ -192,3 +192,29 @@ class AddOrderAction {
 
   Order get order => this._order;
 }
+
+ThunkAction<AppState> getOrdersAction = (Store<AppState> store) async {
+  final prefs = await SharedPreferences.getInstance();
+  final String storedUser = prefs.getString('user');
+  final userData = (json.decode(storedUser));
+
+  final User user = store.state.user ?? User.fromJson(userData);
+  List<Order> orders = [];
+  print(user.jwt);
+  http.Response response = await http.get('$userUrl/${user.id}',
+      headers: {'Authorization': 'Bearer ${user.jwt}'});
+  final respData = json.decode(response.body);
+
+  respData['orders']?.forEach((orderData) {
+    final Order order = Order.fromJson(orderData);
+    orders.add(order);
+  });
+  store.dispatch(GetOrdersAction(orders));
+};
+
+class GetOrdersAction {
+  final List<Order> _orders;
+  GetOrdersAction(this._orders);
+
+  List<Order> get orders => this._orders;
+}
