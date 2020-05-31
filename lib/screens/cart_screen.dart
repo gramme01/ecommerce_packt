@@ -315,20 +315,40 @@ class _CartScreenState extends State<CartScreen> {
         setState(() {
           _isSubmitting = true;
         });
-
         //checkout with stripe
         final newOrderData = await _checkoutCartProducts();
-
         //create order instance on strapi
         Order newOrder = Order.fromJson(newOrderData);
-
         //pass new order instance to action
         StoreProvider.of<AppState>(context).dispatch(AddOrderAction(newOrder));
-
         //clear cart
         StoreProvider.of<AppState>(context).dispatch(clearCartProductsAction);
+        //hide spinner
+        setState(() {
+          _isSubmitting = false;
+        });
+        //show success dialog
+        _showSuccessDialog(state.user.email);
       }
     });
+  }
+
+  Future _showSuccessDialog(email) {
+    return showDialog(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: Text('Success!'),
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Text(
+              'Order Successful!\n\nReceipt has benn sent to $email\n\n Check Orders Tab for the order summary',
+              style: Theme.of(context).textTheme.bodyText2,
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   @override
