@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:http/http.dart' as http;
 import 'package:stripe_payment/stripe_payment.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 import './products_screen.dart';
 import '../models/app_state.dart';
@@ -25,7 +26,9 @@ class CartScreen extends StatefulWidget {
 class _CartScreenState extends State<CartScreen> {
   String userUrl = 'http://10.0.2.2:1337/users';
   String cardUrl = 'http://10.0.2.2:1337/card';
+  String orderUrl = 'http://10.0.2.2:1337/orders';
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  bool _isSubmitting = false;
 
   @override
   void initState() {
@@ -261,9 +264,28 @@ class _CartScreenState extends State<CartScreen> {
           ],
         );
       },
-    ).then((value) {
+    ).then((value) async {
+      _checkoutCartProducts() async {
+        await http.post(
+          orderUrl,
+          body: {
+            "amount": calculateTotalPrice(state.cartProducts),
+            "products": json.encode(state.cartProducts),
+            "paymentMethod": state.cardToken,
+            "customer": state.user.customerId,
+          },
+          headers: {"Authorization": "Bearer ${state.user.jwt}"},
+        );
+      }
+
       if (value == true) {
-        print('Cart Checked Out');
+        //loading Spinner
+        setState(() {
+          _isSubmitting = true;
+        });
+
+        //checkout with stripe
+        await _checkoutCartProducts();
       }
     });
   }
@@ -272,42 +294,45 @@ class _CartScreenState extends State<CartScreen> {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,
-      builder: (context, state) => DefaultTabController(
-        length: 3,
-        initialIndex: 0,
-        child: Scaffold(
-          key: _scaffoldKey,
-          appBar: AppBar(
-            title: Text(
-                'Summary: ${state.cartProducts.length} Items • \$${calculateTotalPrice(state.cartProducts)}'),
-            centerTitle: true,
-            bottom: TabBar(
-              labelColor: Colors.white,
-              unselectedLabelColor: Colors.cyan[100],
-              tabs: [
-                Tab(icon: Icon(Icons.shopping_cart)),
-                Tab(icon: Icon(Icons.credit_card)),
-                Tab(icon: Icon(Icons.receipt)),
+      builder: (context, state) => ModalProgressHUD(
+        child: DefaultTabController(
+          length: 3,
+          initialIndex: 0,
+          child: Scaffold(
+            key: _scaffoldKey,
+            appBar: AppBar(
+              title: Text(
+                  'Summary: ${state.cartProducts.length} Items • \$${calculateTotalPrice(state.cartProducts)}'),
+              centerTitle: true,
+              bottom: TabBar(
+                labelColor: Colors.white,
+                unselectedLabelColor: Colors.cyan[100],
+                tabs: [
+                  Tab(icon: Icon(Icons.shopping_cart)),
+                  Tab(icon: Icon(Icons.credit_card)),
+                  Tab(icon: Icon(Icons.receipt)),
+                ],
+              ),
+            ),
+            body: TabBarView(
+              children: [
+                _cartTab(state),
+                _cardTab(state),
+                _ordersTab(),
               ],
             ),
+            floatingActionButton: state.cartProducts.length > 0
+                ? FloatingActionButton(
+                    child: Icon(
+                      Icons.local_atm,
+                      size: 30,
+                    ),
+                    onPressed: () => _showCheckoutDialog(state),
+                  )
+                : Text(''),
           ),
-          body: TabBarView(
-            children: [
-              _cartTab(state),
-              _cardTab(state),
-              _ordersTab(),
-            ],
-          ),
-          floatingActionButton: state.cartProducts.length > 0
-              ? FloatingActionButton(
-                  child: Icon(
-                    Icons.local_atm,
-                    size: 30,
-                  ),
-                  onPressed: () => _showCheckoutDialog(state),
-                )
-              : Text(''),
         ),
+        inAsyncCall: _isSubmitting,
       ),
     );
   }
