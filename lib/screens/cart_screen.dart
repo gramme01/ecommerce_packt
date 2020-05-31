@@ -186,7 +186,7 @@ class _CartScreenState extends State<CartScreen> {
               .map<Widget>(
                 (order) => ListTile(
                   title: Text('\$${order.amount}'),
-                  subtitle: Text(order.createdAt),
+                  subtitle: Text('${order.createdAt}'),
                   leading: CircleAvatar(
                     backgroundColor: Colors.green,
                     child: Icon(Icons.attach_money, color: Colors.white),
@@ -199,6 +199,7 @@ class _CartScreenState extends State<CartScreen> {
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Icon(Icons.close, size: 60.0),
                     Text(
@@ -342,7 +343,7 @@ class _CartScreenState extends State<CartScreen> {
           Padding(
             padding: const EdgeInsets.all(20.0),
             child: Text(
-              'Order Successful!\n\nReceipt has benn sent to $email\n\n Check Orders Tab for the order summary',
+              'Order Successful!\n\nReceipt has been sent to $email\n\nCheck Orders Tab for the order summary',
               style: Theme.of(context).textTheme.bodyText2,
             ),
           )

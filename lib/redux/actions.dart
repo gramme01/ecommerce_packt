@@ -110,17 +110,17 @@ ThunkAction<AppState> getCartProductsAction = (Store<AppState> store) async {
 
 ThunkAction<AppState> clearCartProductsAction = (Store<AppState> store) async {
   final User user = store.state.user;
-  List<Product> emptyCartProducts = [];
-  await http.put(
-    'cartProductUrl/${user.cartId}',
+  http.Response response = await http.put(
+    '$cartProductUrl/${user.cartId}',
     body: {
       "products": json.encode([]),
     },
     headers: {
-      "Authorization": "Bearer $user.jwt",
+      "Authorization": "Bearer ${user.jwt}",
     },
   );
-  store.dispatch(UpdateCartProductsAction(emptyCartProducts));
+  print(json.decode(response.body));
+  store.dispatch(UpdateCartProductsAction(List(0)));
 };
 
 class UpdateCartProductsAction {

@@ -19,12 +19,13 @@ module.exports = {
       amount: Number(amount) * 100,
       currency: "usd",
       customer,
-      paymentMethod,
+      payment_method: paymentMethod,
       receipt_email: email,
+      confirm: true,
     };
     const idempotencyKey = uuidv4();
 
-    await stripe.charges.create(charge, {
+    await stripe.paymentIntents.create(charge, {
       idempotencyKey,
     });
 
