@@ -3,10 +3,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:http/http.dart' as http;
+import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:stripe_payment/stripe_payment.dart';
 
 import './products_screen.dart';
 import '../models/app_state.dart';
+import '../models/order.dart';
 import '../models/product.dart';
 import '../models/user.dart';
 import '../redux/actions.dart';
@@ -25,7 +27,9 @@ class CartScreen extends StatefulWidget {
 class _CartScreenState extends State<CartScreen> {
   String userUrl = 'http://10.0.2.2:1337/users';
   String cardUrl = 'http://10.0.2.2:1337/card';
+  String orderUrl = 'http://10.0.2.2:1337/orders';
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  bool _isSubmitting = false;
 
   @override
   void initState() {
@@ -175,8 +179,38 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
-  Widget _ordersTab() {
-    return Text('Orders');
+  Widget _ordersTab(AppState state) {
+    return ListView(
+      children: state.orders.length > 0
+          ? state.orders
+              .map<Widget>(
+                (order) => ListTile(
+                  title: Text('\$${order.amount}'),
+                  subtitle: Text('${order.createdAt}'),
+                  leading: CircleAvatar(
+                    backgroundColor: Colors.green,
+                    child: Icon(Icons.attach_money, color: Colors.white),
+                  ),
+                ),
+              )
+              .toList()
+          : [
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(Icons.close, size: 60.0),
+                    Text(
+                      'No orders yet',
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
+                  ],
+                ),
+              )
+            ],
+    );
   }
 
   String calculateTotalPrice(List<Product> cartProducts) {
@@ -251,6 +285,7 @@ class _CartScreenState extends State<CartScreen> {
               onPressed: () => Navigator.of(context).pop(false),
             ),
             RaisedButton(
+              color: Colors.green,
               child: Text(
                 'Checkout',
                 style: TextStyle(color: Colors.white),
@@ -260,53 +295,106 @@ class _CartScreenState extends State<CartScreen> {
           ],
         );
       },
-    ).then((value) {
+    ).then((value) async {
+      _checkoutCartProducts() async {
+        http.Response response = await http.post(
+          orderUrl,
+          body: {
+            "amount": calculateTotalPrice(state.cartProducts),
+            "products": json.encode(state.cartProducts),
+            "paymentMethod": state.cardToken,
+            "customer": state.user.customerId,
+          },
+          headers: {"Authorization": "Bearer ${state.user.jwt}"},
+        );
+        final respData = json.decode(response.body);
+        return respData;
+      }
+
       if (value == true) {
-        print('Cart Checked Out');
+        //loading Spinner
+        setState(() {
+          _isSubmitting = true;
+        });
+        //checkout with stripe
+        final newOrderData = await _checkoutCartProducts();
+        //create order instance on strapi
+        Order newOrder = Order.fromJson(newOrderData);
+        //pass new order instance to action
+        StoreProvider.of<AppState>(context).dispatch(AddOrderAction(newOrder));
+        //clear cart
+        StoreProvider.of<AppState>(context).dispatch(clearCartProductsAction);
+        //hide spinner
+        setState(() {
+          _isSubmitting = false;
+        });
+        //show success dialog
+        _showSuccessDialog(state.user.email);
       }
     });
+  }
+
+  Future _showSuccessDialog(email) {
+    return showDialog(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: Text('Success!'),
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Text(
+              'Order Successful!\n\nReceipt has been sent to $email\n\nCheck Orders Tab for the order summary',
+              style: Theme.of(context).textTheme.bodyText2,
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,
-      builder: (context, state) => DefaultTabController(
-        length: 3,
-        initialIndex: 0,
-        child: Scaffold(
-          key: _scaffoldKey,
-          appBar: AppBar(
-            title: Text(
-                'Summary: ${state.cartProducts.length} Items • \$${calculateTotalPrice(state.cartProducts)}'),
-            centerTitle: true,
-            bottom: TabBar(
-              labelColor: Colors.white,
-              unselectedLabelColor: Colors.cyan[100],
-              tabs: [
-                Tab(icon: Icon(Icons.shopping_cart)),
-                Tab(icon: Icon(Icons.credit_card)),
-                Tab(icon: Icon(Icons.receipt)),
+      builder: (context, state) => ModalProgressHUD(
+        child: DefaultTabController(
+          length: 3,
+          initialIndex: 0,
+          child: Scaffold(
+            key: _scaffoldKey,
+            appBar: AppBar(
+              title: Text(
+                  'Summary: ${state.cartProducts.length} Items • \$${calculateTotalPrice(state.cartProducts)}'),
+              centerTitle: true,
+              bottom: TabBar(
+                labelColor: Colors.white,
+                unselectedLabelColor: Colors.cyan[100],
+                tabs: [
+                  Tab(icon: Icon(Icons.shopping_cart)),
+                  Tab(icon: Icon(Icons.credit_card)),
+                  Tab(icon: Icon(Icons.receipt)),
+                ],
+              ),
+            ),
+            body: TabBarView(
+              children: [
+                _cartTab(state),
+                _cardTab(state),
+                _ordersTab(state),
               ],
             ),
+            floatingActionButton: state.cartProducts.length > 0
+                ? FloatingActionButton(
+                    child: Icon(
+                      Icons.local_atm,
+                      size: 30,
+                    ),
+                    onPressed: () => _showCheckoutDialog(state),
+                  )
+                : Text(''),
           ),
-          body: TabBarView(
-            children: [
-              _cartTab(state),
-              _cardTab(state),
-              _ordersTab(),
-            ],
-          ),
-          floatingActionButton: state.cartProducts.length > 0
-              ? FloatingActionButton(
-                  child: Icon(
-                    Icons.local_atm,
-                    size: 30,
-                  ),
-                  onPressed: () => _showCheckoutDialog(state),
-                )
-              : Text(''),
         ),
+        inAsyncCall: _isSubmitting,
       ),
     );
   }

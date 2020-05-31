@@ -6,6 +6,7 @@ import 'package:redux_thunk/redux_thunk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/app_state.dart';
+import '../models/order.dart';
 import '../models/product.dart';
 import '../models/user.dart';
 
@@ -82,7 +83,7 @@ ThunkAction<AppState> toggleCartProductAction(Product cartProduct) {
       body: {"products": json.encode(cartProductsIds)},
       headers: {"Authorization": "Bearer ${user.jwt}"},
     );
-    store.dispatch(ToggleCartProductAction(updatedCartProducts));
+    store.dispatch(UpdateCartProductsAction(updatedCartProducts));
   };
 }
 
@@ -104,19 +105,27 @@ ThunkAction<AppState> getCartProductsAction = (Store<AppState> store) async {
     final Product product = Product.fromJson(productData);
     cartProducts.add(product);
   });
-  store.dispatch(GetCartProductsAction(cartProducts));
+  store.dispatch(UpdateCartProductsAction(cartProducts));
 };
 
-class ToggleCartProductAction {
-  final List<Product> _cartProducts;
-  ToggleCartProductAction(this._cartProducts);
+ThunkAction<AppState> clearCartProductsAction = (Store<AppState> store) async {
+  final User user = store.state.user;
+  http.Response response = await http.put(
+    '$cartProductUrl/${user.cartId}',
+    body: {
+      "products": json.encode([]),
+    },
+    headers: {
+      "Authorization": "Bearer ${user.jwt}",
+    },
+  );
+  print(json.decode(response.body));
+  store.dispatch(UpdateCartProductsAction(List(0)));
+};
 
-  List<Product> get cartProducts => this._cartProducts;
-}
-
-class GetCartProductsAction {
+class UpdateCartProductsAction {
   final List<Product> _cartProducts;
-  GetCartProductsAction(this._cartProducts);
+  UpdateCartProductsAction(this._cartProducts);
 
   List<Product> get cartProducts => this._cartProducts;
 }
@@ -174,4 +183,12 @@ ThunkAction<AppState> toggleCardTokenAction(String newCardToken) {
     );
     store.dispatch(UpdateCardTokenAction(newCardToken));
   };
+}
+
+//Order Action
+class AddOrderAction {
+  final Order _order;
+  AddOrderAction(this._order);
+
+  Order get order => this._order;
 }
