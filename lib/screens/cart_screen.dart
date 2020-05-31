@@ -266,7 +266,7 @@ class _CartScreenState extends State<CartScreen> {
       },
     ).then((value) async {
       _checkoutCartProducts() async {
-        await http.post(
+        http.Response response = await http.post(
           orderUrl,
           body: {
             "amount": calculateTotalPrice(state.cartProducts),
@@ -276,6 +276,8 @@ class _CartScreenState extends State<CartScreen> {
           },
           headers: {"Authorization": "Bearer ${state.user.jwt}"},
         );
+        final respData = json.decode(response.body);
+        return respData;
       }
 
       if (value == true) {
@@ -285,7 +287,7 @@ class _CartScreenState extends State<CartScreen> {
         });
 
         //checkout with stripe
-        await _checkoutCartProducts();
+        final newOrderData = await _checkoutCartProducts();
       }
     });
   }
