@@ -3,11 +3,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:http/http.dart' as http;
-import 'package:stripe_payment/stripe_payment.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:stripe_payment/stripe_payment.dart';
 
 import './products_screen.dart';
 import '../models/app_state.dart';
+import '../models/order.dart';
 import '../models/product.dart';
 import '../models/user.dart';
 import '../redux/actions.dart';
@@ -288,6 +289,9 @@ class _CartScreenState extends State<CartScreen> {
 
         //checkout with stripe
         final newOrderData = await _checkoutCartProducts();
+
+        //create order instance on strapi
+        Order newOrder = Order.fromJson(newOrderData);
       }
     });
   }
