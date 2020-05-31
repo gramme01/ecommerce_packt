@@ -83,7 +83,7 @@ ThunkAction<AppState> toggleCartProductAction(Product cartProduct) {
       body: {"products": json.encode(cartProductsIds)},
       headers: {"Authorization": "Bearer ${user.jwt}"},
     );
-    store.dispatch(ToggleCartProductAction(updatedCartProducts));
+    store.dispatch(UpdateCartProductsAction(updatedCartProducts));
   };
 }
 
@@ -105,19 +105,27 @@ ThunkAction<AppState> getCartProductsAction = (Store<AppState> store) async {
     final Product product = Product.fromJson(productData);
     cartProducts.add(product);
   });
-  store.dispatch(GetCartProductsAction(cartProducts));
+  store.dispatch(UpdateCartProductsAction(cartProducts));
 };
 
-class ToggleCartProductAction {
-  final List<Product> _cartProducts;
-  ToggleCartProductAction(this._cartProducts);
+ThunkAction<AppState> clearCartProductsAction = (Store<AppState> store) async {
+  final User user = store.state.user;
+  List<Product> emptyCartProducts = [];
+  await http.put(
+    'cartProductUrl/${user.cartId}',
+    body: {
+      "products": json.encode([]),
+    },
+    headers: {
+      "Authorization": "Bearer $user.jwt",
+    },
+  );
+  store.dispatch(UpdateCartProductsAction(emptyCartProducts));
+};
 
-  List<Product> get cartProducts => this._cartProducts;
-}
-
-class GetCartProductsAction {
+class UpdateCartProductsAction {
   final List<Product> _cartProducts;
-  GetCartProductsAction(this._cartProducts);
+  UpdateCartProductsAction(this._cartProducts);
 
   List<Product> get cartProducts => this._cartProducts;
 }

@@ -324,6 +324,9 @@ class _CartScreenState extends State<CartScreen> {
 
         //pass new order instance to action
         StoreProvider.of<AppState>(context).dispatch(AddOrderAction(newOrder));
+
+        //clear cart
+        StoreProvider.of<AppState>(context).dispatch(clearCartProductsAction);
       }
     });
   }
