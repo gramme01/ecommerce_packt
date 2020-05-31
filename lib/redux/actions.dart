@@ -110,7 +110,7 @@ ThunkAction<AppState> getCartProductsAction = (Store<AppState> store) async {
 
 ThunkAction<AppState> clearCartProductsAction = (Store<AppState> store) async {
   final User user = store.state.user;
-  http.Response response = await http.put(
+  await http.put(
     '$cartProductUrl/${user.cartId}',
     body: {
       "products": json.encode([]),
@@ -119,7 +119,6 @@ ThunkAction<AppState> clearCartProductsAction = (Store<AppState> store) async {
       "Authorization": "Bearer ${user.jwt}",
     },
   );
-  print(json.decode(response.body));
   store.dispatch(UpdateCartProductsAction(List(0)));
 };
 
@@ -134,10 +133,8 @@ class UpdateCartProductsAction {
 ThunkAction<AppState> getCardsAction = (Store<AppState> store) async {
   final String customerId = store.state.user.customerId;
   final http.Response response = await http.get('$cardUrl?$customerId');
-  print('GET URL \n $cardUrl?$customerId');
   final respData = json.decode(response.body);
 
-  // print('[CardData]: $respData');
   store.dispatch(GetCardsAction(respData));
 };
 
@@ -200,7 +197,6 @@ ThunkAction<AppState> getOrdersAction = (Store<AppState> store) async {
 
   final User user = store.state.user ?? User.fromJson(userData);
   List<Order> orders = [];
-  print(user.jwt);
   http.Response response = await http.get('$userUrl/${user.id}',
       headers: {'Authorization': 'Bearer ${user.jwt}'});
   final respData = json.decode(response.body);

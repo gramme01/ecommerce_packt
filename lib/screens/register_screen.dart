@@ -127,9 +127,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (form.validate()) {
       form.save();
       _registerUser();
-    } else {
-      print("REGISTER SCREEN Form Invalid");
-    }
+    } else {}
   }
 
   Future<void> _registerUser() async {
@@ -145,7 +143,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       },
     );
     final respData = json.decode(response.body);
-    // print("REGISTER SCREEN ${response.statusCode}");
     if (response.statusCode == 200) {
       setState(() {
         _isSubmitting = false;
@@ -153,7 +150,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _storeUserData(respData);
       _showSnack('User $_username successfully created');
       _redirectUser();
-      print('REGISTER SCREEN $respData');
     } else {
       setState(() {
         _isSubmitting = false;

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:stripe_payment/stripe_payment.dart';
 
@@ -185,8 +186,14 @@ class _CartScreenState extends State<CartScreen> {
           ? state.orders
               .map<Widget>(
                 (order) => ListTile(
-                  title: Text('\$${order.amount}'),
-                  subtitle: Text('${order.createdAt}'),
+                  title: Text(
+                    '\$${order.amount}',
+                    style: TextStyle(fontSize: 18.0),
+                  ),
+                  subtitle: Text(
+                    '${DateFormat('MMM dd, yyyy • kk:mm').format(order.createdAt)}',
+                    style: TextStyle(fontSize: 14.0),
+                  ),
                   leading: CircleAvatar(
                     backgroundColor: Colors.green,
                     child: Icon(Icons.attach_money, color: Colors.white),

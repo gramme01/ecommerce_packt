@@ -125,7 +125,6 @@ class _LoginScreenState extends State<LoginScreen> {
       },
     );
     final respData = json.decode(response.body);
-    // print('LOGIN SCREEN ${response.statusCode}');
     if (response.statusCode == 200) {
       setState(() {
         _isSubmitting = false;
@@ -133,7 +132,6 @@ class _LoginScreenState extends State<LoginScreen> {
       _storeUserData(respData);
       _showSnack('${_email.trim()} successfully logged in');
       _redirectUser();
-      print('LOGIN SCREEN ${json.encode(respData)}');
     } else {
       setState(() {
         _isSubmitting = false;
