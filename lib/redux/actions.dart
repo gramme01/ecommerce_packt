@@ -6,6 +6,7 @@ import 'package:redux_thunk/redux_thunk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/app_state.dart';
+import '../models/order.dart';
 import '../models/product.dart';
 import '../models/user.dart';
 
@@ -174,4 +175,12 @@ ThunkAction<AppState> toggleCardTokenAction(String newCardToken) {
     );
     store.dispatch(UpdateCardTokenAction(newCardToken));
   };
+}
+
+//Order Action
+class AddOrderAction {
+  final Order _order;
+  AddOrderAction(this._order);
+
+  Order get order => this._order;
 }

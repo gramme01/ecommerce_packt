@@ -179,8 +179,37 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
-  Widget _ordersTab() {
-    return Text('Orders');
+  Widget _ordersTab(AppState state) {
+    return ListView(
+      children: state.orders.length > 0
+          ? state.orders
+              .map<Widget>(
+                (order) => ListTile(
+                  title: Text('\$${order.amount}'),
+                  subtitle: Text(order.createdAt),
+                  leading: CircleAvatar(
+                    backgroundColor: Colors.green,
+                    child: Icon(Icons.attach_money, color: Colors.white),
+                  ),
+                ),
+              )
+              .toList()
+          : [
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(Icons.close, size: 60.0),
+                    Text(
+                      'No orders yet',
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
+                  ],
+                ),
+              )
+            ],
+    );
   }
 
   String calculateTotalPrice(List<Product> cartProducts) {
@@ -292,6 +321,9 @@ class _CartScreenState extends State<CartScreen> {
 
         //create order instance on strapi
         Order newOrder = Order.fromJson(newOrderData);
+
+        //pass new order instance to action
+        StoreProvider.of<AppState>(context).dispatch(AddOrderAction(newOrder));
       }
     });
   }
@@ -324,7 +356,7 @@ class _CartScreenState extends State<CartScreen> {
               children: [
                 _cartTab(state),
                 _cardTab(state),
-                _ordersTab(),
+                _ordersTab(state),
               ],
             ),
             floatingActionButton: state.cartProducts.length > 0

@@ -1,31 +1,36 @@
-import 'package:e_commerce_packt/models/user.dart';
-import 'package:e_commerce_packt/redux/actions.dart';
-
 import '../models/app_state.dart';
+import '../models/order.dart';
 import '../models/product.dart';
+import '../models/user.dart';
+import 'actions.dart';
 
 AppState appReducer(AppState state, dynamic action) {
   return AppState(
-      user: userReducer(
-        state.user,
-        action,
-      ),
-      products: productsReducer(
-        state.products,
-        action,
-      ),
-      cartProducts: cartProductsReducer(
-        state.cartProducts,
-        action,
-      ),
-      cards: cardsReducer(
-        state.cards,
-        action,
-      ),
-      cardToken: cardTokenReducer(
-        state.cardToken,
-        action,
-      ));
+    user: userReducer(
+      state.user,
+      action,
+    ),
+    products: productsReducer(
+      state.products,
+      action,
+    ),
+    cartProducts: cartProductsReducer(
+      state.cartProducts,
+      action,
+    ),
+    cards: cardsReducer(
+      state.cards,
+      action,
+    ),
+    orders: ordersReducer(
+      state.orders,
+      action,
+    ),
+    cardToken: cardTokenReducer(
+      state.cardToken,
+      action,
+    ),
+  );
 }
 
 User userReducer(User user, dynamic action) {
@@ -68,4 +73,11 @@ String cardTokenReducer(String cardToken, dynamic action) {
     return action.cardToken;
   }
   return cardToken;
+}
+
+List<Order> ordersReducer(List<Order> orders, dynamic action) {
+  if (action is AddOrderAction) {
+    return List<Order>.from(orders)..add(action.order);
+  }
+  return orders;
 }
